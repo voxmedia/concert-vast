@@ -1,15 +1,8 @@
 import VastElementBase from './vast_element_base'
 
-class Video {
-  constructor(mediaElement){
+class MediaFile {
+  constructor(mediaElement) {
     this.element = mediaElement
-
-    // const importantAttributes = ['bitrate']
-    // importantAttributes.forEach(attr => {
-    //   this[attr] = () => {
-    //     return this.element.getAttribute(attr);
-    //   }
-    // })
   }
 
   bitrate() {
@@ -20,9 +13,49 @@ class Video {
     return parseInt(this.element.getAttribute('width'), 10)
   }
 
-  height(){
+  height() {
     return parseInt(this.element.getAttribute('height'), 10)
   }
+
+  mimeType() {
+    return this.element.getAttribute('type')
+  }
+
+  url() {
+    return this.element.childNodes[0].nodeValue
+  }
+
+  codec() {
+    switch(this.mimeType()){
+      case 'video/mp4': return 'm4v'; break
+      default: throw TypeError('Unknown mime type ' + this.mimeType())
+    }
+  }
+
+  isVideoType() {
+    return this.mimeType().match(/^video\//)
+  }
+}
+
+//
+class HlsMasterPlaylistFile {
+  constructor (videos = []) {
+    this.videos = videos
+  }
+
+  contents() {
+    let contents = []
+    contents.push('#EXTM3U')
+
+    contents = [contents, ...this.videos.map(v => {
+      return `#EXT-X-STREAM-INF:BANDWIDTH=${v.bitrate()*1024},RESOLUTION=${v.width()}x${v.height()},CODEC=${v.codec()}\n${v.url()}`
+    })]
+
+    return contents.join('\n')
+  }
+  // ----
+
+
 }
 
 export default class MediaFiles extends VastElementBase {
@@ -39,25 +72,24 @@ export default class MediaFiles extends VastElementBase {
   // Elements available
   processed(){
     this.videos = this.elements.map(el => {
-      return new Video(el)
+      return new MediaFile(el)
     })
   }
 
   // define public methods on Vast base class
   extendVastBaseWithPublicMethods(){
-    this.vast.videos = () => {return this.getVideos()}
+    this.vast.videos = () => { return this.getVideos() }
     this.vast.asHLSUrl = () => { return this.asHLSUrl() }
   }
 
   // Private stuff ---
 
   getVideos() {
-    return this.videos
+    return this.videos.filter(v => {return v.isVideoType()})
   }
 
-
   asHLSUrl() {
-    const m3u8String = '#notrealyet'
-    return 'data:application/x-mpegURL;base64,' + btoa(m3u8String)
+    const hlsMaker = new HlsMasterPlaylistFile(this.getVideos())
+    return 'data:application/x-mpegURL;base64,' + btoa(hlsMaker.contents())
   }
 }
