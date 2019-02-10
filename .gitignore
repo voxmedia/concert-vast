@@ -1,1 +1,9 @@
 node_modules
+# TODO: ignore all of dist once we can deploy using private registry
+# dist
+dist/index.html
+yarn-error.log
+*.DS_Store
+.vscode
+dist/*.hot-update.*
+stats.json
