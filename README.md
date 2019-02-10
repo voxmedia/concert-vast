@@ -5,4 +5,4 @@ Exploratory work into parsing Vast tags ourselves.
 Important details:
 * es6
 * no semicolons _(come at me)_
-* String TDD via Jest
+* Strict TDD via [Jest](https://jestjs.io/)
