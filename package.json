@@ -1,0 +1,12 @@
+{
+  "name": "concert-vast",
+  "version": "1.0.0",
+  "description": "Simple Vast Parsing for Concert Video Ads",
+  "main": "index.js",
+  "author": "Vox Media",
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "jest": "^24.1.0"
+  }
+}
