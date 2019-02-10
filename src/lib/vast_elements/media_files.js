@@ -46,11 +46,18 @@ export default class MediaFiles extends VastElementBase {
   // define public methods on Vast base class
   extendVastBaseWithPublicMethods(){
     this.vast.videos = () => {return this.getVideos()}
+    this.vast.asHLSUrl = () => { return this.asHLSUrl() }
   }
 
   // Private stuff ---
 
   getVideos() {
     return this.videos
+  }
+
+
+  asHLSUrl() {
+    const m3u8String = '#notrealyet'
+    return 'data:application/x-mpegURL;base64,' + btoa(m3u8String)
   }
 }

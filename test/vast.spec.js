@@ -43,4 +43,10 @@ describe('Vast Videos', () => {
     expect(video.height()).toBe(360);
     expect(video.width()).toBe(640);
   })
+
+  it('can return HLS formatted string', () => {
+    const vast = new Vast({ xml: xmlString })
+    expect(vast.asHLSUrl()).toBeDefined()
+    expect(vast.asHLSUrl()).toMatch(/^data:application\/x-mpegURL/)
+  })
 });
