@@ -14,9 +14,9 @@ Ad
 ```
 
 ### Overview
-In exploring how to parse the VAST XML format, I hoped to explore a clean way to handle the different elements found in a Vast tag.
+In exploring how to parse the [VAST XML format](https://www.iab.com/guidelines/digital-video-ad-serving-template-vast-3-0/) ([PDF](https://www.iab.com/wp-content/uploads/2015/06/VASTv3_0.pdf)), I hoped to explore a clean way to handle the different elements found in a Vast tag.
 
-Instead of writing a large class to handle all of these different attributes, each section is contained in it's own class extending `VastElementBase`.
+Instead of writing a bulging class to handle all of these different attributes,  I segmented each responsibility into it's own section, extracted as a class extending `VastElementBase`.
 
 The idea is that once the Vast XML is loaded, each VastElement will query the XML Dom to inspect the relevant parts of the xml and provide rich functionality by extending the base `Vast` class.
 
