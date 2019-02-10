@@ -40,6 +40,7 @@ export default class Vast {
     request.addEventListener("load", (e) => {
       console.log('load complete', e)
       this.vastXml = request.response;
+      this.parse()
     });
 
     request.addEventListener("progress", (e) => {
@@ -54,7 +55,6 @@ export default class Vast {
 
     request.open("GET", this.vastUrl)
     console.log('loading remote vast from ', this.vastUrl)
-    console.log(request)
     request.send('')
   }
 
