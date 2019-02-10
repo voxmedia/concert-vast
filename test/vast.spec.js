@@ -32,6 +32,15 @@ describe('Vast Videos', () => {
   })
 
   it('can return a list of video files', () => {
+    const vast = new Vast({xml: xmlString})
+    const videos = vast.videos()
+    expect(videos.length).toBe(11);
+  })
 
+  it('a video file knows its height and width', () => {
+    const vast = new Vast({ xml: xmlString })
+    const video = vast.videos()[0]
+    expect(video.height()).toBe(360);
+    expect(video.width()).toBe(640);
   })
 });
