@@ -2,7 +2,6 @@ export default class VastElementBase {
   constructor(vastBase) {
     this.vast = vastBase
     this.setup()
-    this.extendVastBaseWithPublicMethods()
     this.elements = []
   }
 
@@ -12,12 +11,8 @@ export default class VastElementBase {
   // Subclasses have be loaded
   setup() {}
 
-  // Vast file has been processed
-  processed() {}
-
-  // Use this call to extend the underlying vast
-  // class with the methods you need to support
-  extendVastBaseWithPublicMethods() {}
+  // Vast file has been loaded and is ready to use
+  onVastReady() {}
 
   // ----
   process() {
@@ -28,6 +23,6 @@ export default class VastElementBase {
     this.elements = Array.from(
       this.vast.vastDocument.querySelectorAll(selector)
     )
-    this.processed()
+    this.onVastReady()
   }
 }

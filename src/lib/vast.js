@@ -1,6 +1,6 @@
 import MediaFiles from './vast_elements/media_files'
-
-const VAST_ELEMENTS = [MediaFiles];
+import Clickthrough from './vast_elements/clickthrough'
+import Impression from './vast_elements/impression'
 
 export default class Vast {
   constructor({xml, url} = {}) {
@@ -13,9 +13,11 @@ export default class Vast {
       throw TypeError('Vast constructor expects either a xml or an url argument to be passed');
     }
 
-    this.loadedElements = VAST_ELEMENTS.map(vastElement => {
-      return new vastElement(this)
-    })
+    this.loadedElements = {
+      'MediaFiles': (new MediaFiles(this)),
+      'Clickthrough': (new Clickthrough(this)),
+      'Impression': (new Impression(this))
+    }
 
     if (this.vastXml) {
       this.parse()
@@ -25,6 +27,28 @@ export default class Vast {
       this.loadRemoteVast()
     }
   }
+
+  videos() {
+    return this.loadedElements['MediaFiles'].videos()
+  }
+
+  asHLSUrl() {
+    return this.loadedElements['MediaFiles'].asHLSUrl()
+  }
+
+  clickthroughUrl() {
+    return this.loadedElements['Clickthrough'].clickthroughUrl()
+  }
+
+  impressionUrls() {
+    return this.loadedElements['Impression'].impressionUrls()
+  }
+
+  addImpressionUrls(doc = document) {
+    return this.loadedElements['Impression'].addImpressionUrls(doc)
+  }
+
+  /// private ----
 
   parse() {
     if (!this.vastDocument) {
@@ -70,6 +94,6 @@ export default class Vast {
   }
 
   processAllElements() {
-    this.loadedElements.forEach(e => {e.process()})
+    Object.values(this.loadedElements).forEach(e => e.process())
   }
 }
