@@ -80,7 +80,7 @@ describe('Vast Impressions', () => {
     const fakeDoc = {
       createElement: jest.fn(t => {return {style:{}}}),
       body: {
-        appendChild: jest.fn(t => {'appending: ' + t})
+        appendChild: jest.fn(t => {})
       }
     }
 
