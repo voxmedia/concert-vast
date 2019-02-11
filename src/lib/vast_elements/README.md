@@ -27,6 +27,6 @@ There are three major methods that the extending class must support
 
 1. `setup()` – this will be called once your element class is loaded, use it like a constructor.
 
-1. `processed()` – The vast file has been processed and your selector has been run, you can find your elements loaded in `this.elements`
+1. `onVastReady()` – The vast file has been onVastReady and your selector has been run, you can find your elements loaded in `this.elements`
 
 

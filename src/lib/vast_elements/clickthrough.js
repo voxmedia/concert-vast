@@ -9,7 +9,7 @@ export default class Clickthrough extends VastElementBase {
     return 'Creative VideoClicks ClickThrough'
   }
 
-  processed(){
+  onVastReady(){
     this.clickthrough = this.elements.map(el => {
       return el.childNodes[0].nodeValue
     })[0]

@@ -11,8 +11,8 @@ export default class VastElementBase {
   // Subclasses have be loaded
   setup() {}
 
-  // Vast file has been processed
-  processed() {}
+  // Vast file has been loaded and is ready to use
+  onVastReady() {}
 
   // ----
   process() {
@@ -23,6 +23,6 @@ export default class VastElementBase {
     this.elements = Array.from(
       this.vast.vastDocument.querySelectorAll(selector)
     )
-    this.processed()
+    this.onVastReady()
   }
 }
