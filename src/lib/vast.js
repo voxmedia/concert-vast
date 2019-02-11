@@ -1,4 +1,5 @@
 import MediaFiles from './vast_elements/media_files'
+import Clickthrough from './vast_elements/clickthrough'
 
 export default class Vast {
   constructor({xml, url} = {}) {
@@ -12,7 +13,8 @@ export default class Vast {
     }
 
     this.loadedElements = {
-      'MediaFiles': (new MediaFiles(this))
+      'MediaFiles': (new MediaFiles(this)),
+      'Clickthrough': (new Clickthrough(this))
     }
 
     this.parse()
@@ -25,6 +27,10 @@ export default class Vast {
 
   asHLSUrl() {
     return this.loadedElements['MediaFiles'].asHLSUrl();
+  }
+
+  clickthroughUrl() {
+    return this.loadedElements['Clickthrough'].clickthroughUrl();
   }
 
   /// private ----
