@@ -70,7 +70,7 @@ export default class MediaFiles extends VastElementBase {
   }
 
   // Elements available
-  processed(){
+  onVastReady(){
     this.mediaFiles = this.elements.map(el => {
       return new MediaFile(el)
     })
