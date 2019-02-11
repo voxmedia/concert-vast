@@ -1,6 +1,5 @@
 import Vast from '../src/lib/vast'
 import * as fs from 'fs'
-import * as process from 'process'
 
 describe('Basic Vast class functions', () => {
   it('it can be instantiated with a string', () => {
@@ -32,6 +31,9 @@ describe('Vast Videos', () => {
   })
 
   it('can return a list of video files', () => {
-
+    const vast = new Vast({xml: xmlString})
+    const videos = vast.videos()
+    expect(videos.length).toBe(10);
   })
+
 });
