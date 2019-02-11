@@ -1,5 +1,6 @@
 import MediaFiles from './vast_elements/media_files'
 import Clickthrough from './vast_elements/clickthrough'
+import Impression from './vast_elements/impression'
 
 export default class Vast {
   constructor({xml, url} = {}) {
@@ -14,7 +15,8 @@ export default class Vast {
 
     this.loadedElements = {
       'MediaFiles': (new MediaFiles(this)),
-      'Clickthrough': (new Clickthrough(this))
+      'Clickthrough': (new Clickthrough(this)),
+      'Impression': (new Impression(this))
     }
 
     this.parse()
@@ -22,15 +24,19 @@ export default class Vast {
   }
 
   videos() {
-    return this.loadedElements['MediaFiles'].videos();
+    return this.loadedElements['MediaFiles'].videos()
   }
 
   asHLSUrl() {
-    return this.loadedElements['MediaFiles'].asHLSUrl();
+    return this.loadedElements['MediaFiles'].asHLSUrl()
   }
 
   clickthroughUrl() {
-    return this.loadedElements['Clickthrough'].clickthroughUrl();
+    return this.loadedElements['Clickthrough'].clickthroughUrl()
+  }
+
+  impressionUrls() {
+    return this.loadedElements['Impression'].impressionUrls()
   }
 
   /// private ----

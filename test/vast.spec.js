@@ -52,3 +52,16 @@ describe('Vast Clickthrough', () => {
   })
 })
 
+describe('Vast Impressions', () => {
+  let xmlString
+
+  beforeAll(()=> {
+    xmlString = fs.readFileSync('./test/fixtures/vast.xml')
+  })
+
+  it('should return a series of impression urls', () => {
+    const vast = new Vast({xml: xmlString})
+    expect(vast.impressionUrls()).not.toBe(undefined)
+    expect(vast.impressionUrls()[0]).toMatch(/^https:\/\/googleads4/)
+  })
+})
