@@ -39,6 +39,10 @@ export default class Vast {
     return this.loadedElements['Impression'].impressionUrls()
   }
 
+  addImpressionUrls(doc = document) {
+    return this.loadedElements['Impression'].addImpressionUrls(doc)
+  }
+
   /// private ----
   parse() {
     if (!this.vastDocument) {
