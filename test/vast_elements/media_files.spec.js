@@ -68,7 +68,7 @@ describe('MediaFile to HLS Url', () => {
     const contents = atob(dataUrl.split(',')[1])
     expect(contents).toMatch(/^#EXTM3U/)
     const contentArrayAsLines = contents.split("\n")
-    expect(contentArrayAsLines[1]).toBe('#EXT-X-STREAM-INF:BANDWIDTH=268288,RESOLUTION=640x360,CODEC=m4v')
+    expect(contentArrayAsLines[1]).toBe('#EXT-X-STREAM-INF:BANDWIDTH=268288,RESOLUTION=640x360,CODEC=mp4v')
     expect(contentArrayAsLines[2]).toBe(vast.videos()[0].url())
   })
 });
