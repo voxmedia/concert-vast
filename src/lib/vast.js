@@ -1,7 +1,5 @@
 import MediaFiles from './vast_elements/media_files'
 
-const VAST_ELEMENTS = [MediaFiles];
-
 export default class Vast {
   constructor({xml, url} = {}) {
     this.vastXml = xml
@@ -13,15 +11,23 @@ export default class Vast {
       throw TypeError('Vast constructor expects either a xml or an url argument to be passed');
     }
 
-    this.loadedElements = VAST_ELEMENTS.map(vastElement => {
-      return new vastElement(this)
-    })
+    this.loadedElements = {
+      'MediaFiles': (new MediaFiles(this))
+    }
 
     this.parse()
-
-    this.loadedElements.forEach(e => {e.process()})
+    Object.values(this.loadedElements).forEach(e => e.process())
   }
 
+  videos() {
+    return this.loadedElements['MediaFiles'].videos();
+  }
+
+  asHLSUrl() {
+    return this.loadedElements['MediaFiles'].asHLSUrl();
+  }
+
+  /// private ----
   parse() {
     if (!this.vastDocument) {
       const parser = new DOMParser()

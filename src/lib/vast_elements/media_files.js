@@ -61,7 +61,7 @@ class HlsMasterPlaylistFile {
 export default class MediaFiles extends VastElementBase {
   // Think of this as the constructor
   setup() {
-    this.videos = []
+    this.mediaFiles = []
   }
 
   // Selector to consume elements
@@ -71,25 +71,19 @@ export default class MediaFiles extends VastElementBase {
 
   // Elements available
   processed(){
-    this.videos = this.elements.map(el => {
+    this.mediaFiles = this.elements.map(el => {
       return new MediaFile(el)
     })
   }
 
-  // define public methods on Vast base class
-  extendVastBaseWithPublicMethods(){
-    this.vast.videos = () => { return this.getVideos() }
-    this.vast.asHLSUrl = () => { return this.asHLSUrl() }
-  }
-
   // Private stuff ---
 
-  getVideos() {
-    return this.videos.filter(v => {return v.isVideoType()})
+  videos() {
+    return this.mediaFiles.filter(v => {return v.isVideoType()})
   }
 
   asHLSUrl() {
-    const hlsMaker = new HlsMasterPlaylistFile(this.getVideos())
+    const hlsMaker = new HlsMasterPlaylistFile(this.videos())
     return 'data:application/x-mpegURL;base64,' + btoa(hlsMaker.contents())
   }
 }
