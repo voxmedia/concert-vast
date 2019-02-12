@@ -3,15 +3,11 @@ import Clickthrough from './vast_elements/clickthrough'
 import Impression from './vast_elements/impression'
 
 export default class Vast {
-  constructor({xml, url} = {}) {
+  constructor({xml} = {}) {
     this.vastXml = xml
-    this.vastUrl = url
+    this.vastUrl = null
     this.vastDocument = null
-
-    if (this.vastXml == undefined &&
-       this.vastUrl == undefined) {
-      throw TypeError('Vast constructor expects either a xml or an url argument to be passed');
-    }
+    this.bandwidthEstimateInKbs = 0
 
     this.loadedElements = {
       'MediaFiles': (new MediaFiles(this)),
@@ -22,10 +18,10 @@ export default class Vast {
     if (this.vastXml) {
       this.parse()
     }
+  }
 
-    if(this.vastUrl) {
-      this.loadRemoteVast()
-    }
+  bandwidth() {
+    return this.bandwidthEstimateInKbs
   }
 
   videos() {
@@ -58,39 +54,28 @@ export default class Vast {
     }
   }
 
-  async loadRemoteVast(url = this.vastUrl) {
-    this.vastUrl = url
-
+  async loadRemoteVast(url) {
     return new Promise((resolve, reject) => {
-
+      this.vastUrl = url
       const request = new XMLHttpRequest()
       let startTime;
       let endTime;
 
       request.addEventListener('load', (e) => {
-        console.log('load complete')
         endTime = (new Date()).getTime()
 
         const downloadTime = endTime - startTime;
         const downloadSize = request.responseText.length
-        const speed = (downloadSize * 8) / ((downloadTime)/1000) / 1024;
-
-        console.log(`Complete in: ${downloadTime} ms`)
-        console.log(`Size ${downloadSize}`)
-        console.log(`speed ${speed} kbps`)
+        this.bandwidthEstimateInKbs = (downloadSize * 8) / ((downloadTime)/1000) / 1024;
 
         this.vastXml = request.response;
         this.parse()
         resolve()
       });
 
-      // TODO: figure out if we should record bandwidth acceleration?
-      request.addEventListener('progress', (e) => {
-        console.log('progress ... ', percentComplete)
-      });
-
       request.addEventListener('error', (e) => {
         console.log('failed', e)
+        // todo should not reject here, but do something else
         reject()
       });
 
