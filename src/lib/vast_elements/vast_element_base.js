@@ -16,7 +16,7 @@ export default class VastElementBase {
 
   // ----
   process() {
-    if (!this.vast.vastDocument) return;
+    if (!this.vast.vastDocument) return
 
     const selector = this.constructor.selector()
 

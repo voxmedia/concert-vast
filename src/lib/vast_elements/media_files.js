@@ -26,13 +26,16 @@ class MediaFile {
   }
 
   codec() {
-    switch(this.mimeType()){
+    switch (this.mimeType()) {
       case 'video/mp4':
       case 'video/3gpp':
-        return 'mp4v'; break
+        return 'mp4v'
+        break
       case 'video/webm':
-        return 'vp8'; break
-      default: throw TypeError('Unknown mime type ' + this.mimeType())
+        return 'vp8'
+        break
+      default:
+        throw TypeError('Unknown mime type ' + this.mimeType())
     }
   }
 
@@ -43,7 +46,7 @@ class MediaFile {
 
 //
 class HlsMasterPlaylistFile {
-  constructor (videos = []) {
+  constructor(videos = []) {
     this.videos = videos
   }
 
@@ -51,15 +54,17 @@ class HlsMasterPlaylistFile {
     let contents = []
     contents.push('#EXTM3U')
 
-    contents = [contents, ...this.videos.map(v => {
-      return `#EXT-X-STREAM-INF:BANDWIDTH=${v.bitrate()*1024},RESOLUTION=${v.width()}x${v.height()},CODEC=${v.codec()}\n${v.url()}`
-    })]
+    contents = [
+      contents,
+      ...this.videos.map(v => {
+        return `#EXT-X-STREAM-INF:BANDWIDTH=${v.bitrate() *
+          1024},RESOLUTION=${v.width()}x${v.height()},CODEC=${v.codec()}\n${v.url()}`
+      }),
+    ]
 
     return contents.join('\n')
   }
   // ----
-
-
 }
 
 export default class MediaFiles extends VastElementBase {
@@ -70,11 +75,11 @@ export default class MediaFiles extends VastElementBase {
 
   // Selector to consume elements
   static selector() {
-    return 'Creative MediaFiles MediaFile';
+    return 'Creative MediaFiles MediaFile'
   }
 
   // Elements available
-  onVastReady(){
+  onVastReady() {
     this.mediaFiles = this.elements.map(el => {
       return new MediaFile(el)
     })
@@ -83,7 +88,9 @@ export default class MediaFiles extends VastElementBase {
   // Private stuff ---
 
   videos() {
-    return this.mediaFiles.filter(v => {return v.isVideoType()})
+    return this.mediaFiles.filter(v => {
+      return v.isVideoType()
+    })
   }
 
   asHLSUrl() {
