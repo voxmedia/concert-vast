@@ -28,7 +28,11 @@ class MediaFile {
   codec() {
     switch (this.mimeType()) {
       case 'video/mp4':
-        return 'm4v'
+      case 'video/3gpp':
+        return 'mp4v'
+        break
+      case 'video/webm':
+        return 'vp8'
         break
       default:
         throw TypeError('Unknown mime type ' + this.mimeType())

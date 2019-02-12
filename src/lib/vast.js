@@ -3,16 +3,11 @@ import Clickthrough from './vast_elements/clickthrough'
 import Impression from './vast_elements/impression'
 
 export default class Vast {
-  constructor({ xml, url } = {}) {
+  constructor({ xml } = {}) {
     this.vastXml = xml
-    this.vastUrl = url
+    this.vastUrl = null
     this.vastDocument = null
-
-    if (this.vastXml == undefined && this.vastUrl == undefined) {
-      throw TypeError(
-        'Vast constructor expects either a xml or an url argument to be passed'
-      )
-    }
+    this.bandwidthEstimateInKbs = 0
 
     this.loadedElements = {
       MediaFiles: new MediaFiles(this),
@@ -20,8 +15,13 @@ export default class Vast {
       Impression: new Impression(this),
     }
 
-    this.parse()
-    Object.values(this.loadedElements).forEach(e => e.process())
+    if (this.vastXml) {
+      this.parse()
+    }
+  }
+
+  bandwidth() {
+    return this.bandwidthEstimateInKbs
   }
 
   videos() {
@@ -45,6 +45,7 @@ export default class Vast {
   }
 
   /// private ----
+
   parse() {
     if (!this.vastDocument) {
       const parser = new DOMParser()
@@ -52,6 +53,43 @@ export default class Vast {
         this.vastXml,
         'application/xml'
       )
+      this.processAllElements()
     }
+  }
+
+  async loadRemoteVast(url) {
+    return new Promise((resolve, reject) => {
+      this.vastUrl = url
+      const request = new XMLHttpRequest()
+      let startTime
+      let endTime
+
+      request.addEventListener('load', e => {
+        endTime = new Date().getTime()
+
+        const downloadTime = endTime - startTime
+        const downloadSize = request.responseText.length
+        this.bandwidthEstimateInKbs =
+          (downloadSize * 8) / (downloadTime / 1000) / 1024
+
+        this.vastXml = request.response
+        this.parse()
+        resolve()
+      })
+
+      request.addEventListener('error', e => {
+        console.log('failed', e)
+        // todo should not reject here, but do something else
+        reject()
+      })
+
+      startTime = new Date().getTime()
+      request.open('GET', this.vastUrl)
+      request.send()
+    })
+  }
+
+  processAllElements() {
+    Object.values(this.loadedElements).forEach(e => e.process())
   }
 }
