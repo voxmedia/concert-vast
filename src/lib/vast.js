@@ -58,39 +58,46 @@ export default class Vast {
     }
   }
 
-  loadRemoteVast() {
-    const request = new XMLHttpRequest()
-    let startTime;
-    let endTime;
+  async loadRemoteVast(url = this.vastUrl) {
+    this.vastUrl = url
 
-    request.addEventListener('load', (e) => {
-      console.log('load complete')
-      endTime = (new Date()).getTime()
+    return new Promise((resolve, reject) => {
 
-      const downloadTime = endTime - startTime;
-      const downloadSize = request.responseText.length
-      const speed = (downloadSize * 8) / ((downloadTime)/1000) / 1024;
+      const request = new XMLHttpRequest()
+      let startTime;
+      let endTime;
 
-      console.log(`Complete in: ${downloadTime} ms`)
-      console.log(`Size ${downloadSize}`)
-      console.log(`speed ${speed} kbps`)
+      request.addEventListener('load', (e) => {
+        console.log('load complete')
+        endTime = (new Date()).getTime()
 
-      this.vastXml = request.response;
-      this.parse()
-    });
+        const downloadTime = endTime - startTime;
+        const downloadSize = request.responseText.length
+        const speed = (downloadSize * 8) / ((downloadTime)/1000) / 1024;
 
-    // TODO: figure out if we should record bandwidth acceleration?
-    // request.addEventListener('progress', (e) => {
-    //   console.log('progress ... ', percentComplete)
-    // });
+        console.log(`Complete in: ${downloadTime} ms`)
+        console.log(`Size ${downloadSize}`)
+        console.log(`speed ${speed} kbps`)
 
-    request.addEventListener('error', (e) => {
-      console.log('failed', e)
-    });
+        this.vastXml = request.response;
+        this.parse()
+        resolve()
+      });
 
-    startTime = (new Date()).getTime()
-    request.open('GET', this.vastUrl, false)
-    request.send()
+      // TODO: figure out if we should record bandwidth acceleration?
+      request.addEventListener('progress', (e) => {
+        console.log('progress ... ', percentComplete)
+      });
+
+      request.addEventListener('error', (e) => {
+        console.log('failed', e)
+        reject()
+      });
+
+      startTime = (new Date()).getTime()
+      request.open('GET', this.vastUrl)
+      request.send()
+    })
   }
 
   processAllElements() {

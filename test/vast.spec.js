@@ -1,13 +1,16 @@
 import Vast from '../src/lib/vast'
 import * as fs from 'fs'
 
+const REMOTE_URL = 'https://ad.doubleclick.net/ddm/pfadx/N884.154386.EATER.COM/B21643693.231589573;sz=0x0;ord=[timestamp];dc_lat=;dc_rdid=;tag_for_child_directed_treatment=;tfua=;dcmt=text/xml'
+
 describe('Basic Vast class functions', () => {
   it('it can be instantiated with a string', () => {
     const vast = new Vast({xml: ''})
   });
 
   it('it can be instantiated with a url', () => {
-    const vast = new Vast({ url: 'https://ad.doubleclick.net/ddm/pfadx/N884.154386.EATER.COM/B21643693.231589573;sz=0x0;ord=[timestamp];dc_lat=;dc_rdid=;tag_for_child_directed_treatment=;tfua=;dcmt=text/xml'})
+    const vast = new Vast({xml: ''})
+    await vast.loadRemoteVast(REMOTE_URL)
     const videos = vast.videos()
     expect(videos.length).toBeGreaterThan(2)
   });
