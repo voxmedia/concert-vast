@@ -9,7 +9,7 @@ export default class Impression extends VastElementBase {
     return 'Ad Impression'
   }
 
-  onVastReady(){
+  onVastReady() {
     this._impressionUrls = this.elements.map(el => {
       return el.childNodes[0].nodeValue
     })

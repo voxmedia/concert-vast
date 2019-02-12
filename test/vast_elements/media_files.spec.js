@@ -1,10 +1,9 @@
 import Vast from '../../src/lib/vast'
 import * as fs from 'fs'
 
-
 describe('Media Files extension', () => {
   let xmlString
-  let vast;
+  let vast
 
   beforeAll(() => {
     xmlString = fs.readFileSync('./test/fixtures/vast.xml')
@@ -39,7 +38,9 @@ describe('Media Files extension', () => {
     const video = vast.videos()[0]
     expect(video.url).not.toBe(undefined)
     expect(typeof video.url).toBe('function')
-    expect(video.url()).toBe('https://gcdn.2mdn.net/videoplayback/id/fadde8e0a3b24322/itag/18/source/doubleclick_dmm/ratebypass/yes/acao/yes/ip/0.0.0.0/ipbits/0/expire/3680618308/sparams/id,itag,source,ratebypass,acao,ip,ipbits,expire/signature/974EA821C8BCBD176CED7FBDDDF84421BB96D3F7.B210716A5BB26DFD0F70F1D482AA150CB6B9D20/key/ck2/file/file.mp4')
+    expect(video.url()).toBe(
+      'https://gcdn.2mdn.net/videoplayback/id/fadde8e0a3b24322/itag/18/source/doubleclick_dmm/ratebypass/yes/acao/yes/ip/0.0.0.0/ipbits/0/expire/3680618308/sparams/id,itag,source,ratebypass,acao,ip,ipbits,expire/signature/974EA821C8BCBD176CED7FBDDDF84421BB96D3F7.B210716A5BB26DFD0F70F1D482AA150CB6B9D20/key/ck2/file/file.mp4'
+    )
   })
 
   it('a video file knows its height and width', () => {
@@ -51,7 +52,7 @@ describe('Media Files extension', () => {
 
 describe('MediaFile to HLS Url', () => {
   let xmlString
-  let vast;
+  let vast
 
   beforeAll(() => {
     xmlString = fs.readFileSync('./test/fixtures/vast.xml')
@@ -64,12 +65,13 @@ describe('MediaFile to HLS Url', () => {
   })
 
   it('should conform to m3u8 headers', () => {
-    const dataUrl = vast.asHLSUrl();
+    const dataUrl = vast.asHLSUrl()
     const contents = atob(dataUrl.split(',')[1])
     expect(contents).toMatch(/^#EXTM3U/)
-    const contentArrayAsLines = contents.split("\n")
-    expect(contentArrayAsLines[1]).toBe('#EXT-X-STREAM-INF:BANDWIDTH=268288,RESOLUTION=640x360,CODEC=m4v')
+    const contentArrayAsLines = contents.split('\n')
+    expect(contentArrayAsLines[1]).toBe(
+      '#EXT-X-STREAM-INF:BANDWIDTH=268288,RESOLUTION=640x360,CODEC=m4v'
+    )
     expect(contentArrayAsLines[2]).toBe(vast.videos()[0].url())
   })
-});
-
+})
