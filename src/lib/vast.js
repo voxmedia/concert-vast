@@ -3,20 +3,21 @@ import Clickthrough from './vast_elements/clickthrough'
 import Impression from './vast_elements/impression'
 
 export default class Vast {
-  constructor({xml, url} = {}) {
+  constructor({ xml, url } = {}) {
     this.vastXml = xml
     this.vastUrl = url
     this.vastDocument = null
 
-    if(this.vastXml == undefined &&
-       this.vastUrl == undefined){
-      throw TypeError('Vast constructor expects either a xml or an url argument to be passed');
+    if (this.vastXml == undefined && this.vastUrl == undefined) {
+      throw TypeError(
+        'Vast constructor expects either a xml or an url argument to be passed'
+      )
     }
 
     this.loadedElements = {
-      'MediaFiles': (new MediaFiles(this)),
-      'Clickthrough': (new Clickthrough(this)),
-      'Impression': (new Impression(this))
+      MediaFiles: new MediaFiles(this),
+      Clickthrough: new Clickthrough(this),
+      Impression: new Impression(this),
     }
 
     this.parse()
@@ -47,7 +48,10 @@ export default class Vast {
   parse() {
     if (!this.vastDocument) {
       const parser = new DOMParser()
-      this.vastDocument = parser.parseFromString(this.vastXml, "application/xml")
+      this.vastDocument = parser.parseFromString(
+        this.vastXml,
+        'application/xml'
+      )
     }
   }
 }
