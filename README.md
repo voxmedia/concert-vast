@@ -53,7 +53,6 @@ player.src([{ type: bestVastVideo.mimeType(), src: bestVastVideo.url() }])
 
 1. Test this with the HymnalAd SDK Video player
 1. Design error handling
-1. Get CI testing in place for this branch
 1. Open source it 🙏
 
 ### Contributing
