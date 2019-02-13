@@ -67,9 +67,10 @@ export default class Vast {
     }
   ) {
     const chooser = new StreamChooser()
-    chooser.useVast(this)
+    chooser.useVideosFromMediaFile(this.videos())
+    chooser.setBandwidth(this.bandwidth())
 
-    if (bandwidth) chooser.setBandWidth(bandwidth)
+    if (bandwidth) chooser.setBandwidth(bandwidth)
     if (mimeTypes) chooser.setSupportedMimeTypes(mimeTypes)
 
     chooser.setPlayerDimensions({ width: width, height: height })

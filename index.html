@@ -7,6 +7,18 @@
         width: 100%;
         margin: 20px 0;
       }
+
+      video {
+        width: 100%;
+      }
+
+      .video-js .vjs-tech {
+        width: 100%;
+      }
+
+      .video-js .vjs-tech {
+        height: auto;
+      }
     </style>
   </head>
   <body>
@@ -14,8 +26,7 @@
       name="vastUrl"
       value="https://ad.doubleclick.net/ddm/pfadx/N884.154386.EATER.COM/B21643693.231589573;sz=0x0;ord=[timestamp];dc_lat=;dc_rdid=;tag_for_child_directed_treatment=;tfua=;dcmt=text/xml"
     />
-    https://ad.doubleclick.net/ddm/pfadx/N3493.3018656VOX-CONCERT/B22204404.238409492;sz=0x0;ord=[timestamp];dc_lat=;dc_rdid=;tag_for_child_directed_treatment=;tfua=;dcmt=text/xml;dc_vast=3
-    <video class="video-js" controls width="900" height="480"></video>
+    <video class="video-js" width="600px" controls></video>
   </body>
   <script src="https://vjs.zencdn.net/7.4.1/video.js"></script>
   <script>
@@ -25,7 +36,7 @@
     function loadVast(url) {
       v.loadRemoteVast(url).then(r => {
         console.log(v.asHLSUrl())
-        console.log('bandiwdth:', v.bandwidth())
+        console.log('bandwidth:', v.bandwidth())
 
         var videoElement = document.querySelector('.video-js')
 

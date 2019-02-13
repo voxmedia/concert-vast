@@ -1,21 +1,16 @@
-import Vast from './vast'
 import { supportedMimeTypes } from './supported_formats'
 
 export default class StreamChooser {
   constructor() {
-    this.vast = null
+    this.videos = null
     this.playerWidth = 0
     this.playerHeight = 0
     this.supportedMimeTypes = supportedMimeTypes()
     this.bandwidthInKbs = 0
   }
 
-  useVast(vast) {
-    if (vast.constructor.name != 'Vast') {
-      throw new TypeError('must be a Vast object', typeof Vast)
-    }
-    this.vast = vast
-    this.setBandWidth(vast.bandwidth())
+  useVideosFromMediaFile(mediaFiles) {
+    this.videos = mediaFiles
   }
 
   setPlayerDimensions({ height, width }) {
@@ -27,20 +22,18 @@ export default class StreamChooser {
     this.supportedMimeTypes = types
   }
 
-  setBandWidth(bandWidthInKbs) {
-    this.bandwidthInKbs = bandWidthInKbs
+  setBandwidth(bandwidthInKbs) {
+    this.bandwidthInKbs = bandwidthInKbs
   }
 
   bestVideo() {
-    const matchingFormats = this.vast
-      .videos()
-      .filter(v => this.compatibleFormats(v))
+    const matchingFormats = this.videos.filter(v => this.compatibleFormats(v))
     console.log('matchingFormats', matchingFormats.map(v => v.mimeType()))
 
     const closestSize = matchingFormats.sort((a, b) => this.closestSized(a, b))
     console.log(
       'closestSize',
-      closestSize.map(v => v.width() + 'x' + v.height())
+      closestSize.map(v => v.width() + 'x' + v.height() + '@' + v.bitrate())
     )
 
     const notExceedingBandwidth = closestSize.filter(v =>
@@ -48,7 +41,9 @@ export default class StreamChooser {
     )
     console.log(
       'notExceedingBandwidth',
-      notExceedingBandwidth.map(v => v.width() + 'x' + v.height())
+      notExceedingBandwidth.map(
+        v => v.width() + 'x' + v.height() + '@' + v.bitrate()
+      )
     )
 
     if (matchingFormats.length <= 1) return matchingFormats[0]
@@ -58,10 +53,22 @@ export default class StreamChooser {
     return notExceedingBandwidth[0]
   }
 
+  /**
+   * Returns true of this video is playable on the device/browser
+   * Follows the filter callback interface
+   * @param {MediaElement} video
+   */
   compatibleFormats(video) {
     return this.supportedMimeTypes.indexOf(video.mimeType()) != -1
   }
 
+  /**
+   * Sorts the videos interms of the closest one to the playersize
+   * This follows the sort callback interface.
+   *
+   * @param {MediaElement} a the first video in the sort params
+   * @param {MediaElement} b the second video in the sort params
+   */
   closestSized(a, b) {
     const aWProximity =
       Math.abs(this.playerWidth - a.width()) / this.playerWidth
@@ -75,7 +82,17 @@ export default class StreamChooser {
     return aWProximity * aHProximity - bWProximity * bHProximity
   }
 
+  /**
+   * Returns true if the video's bandwidth is at or below
+   * the calculated bandwidth
+   * Conforms to the filter callback interface
+   * @param {MediaElement} video
+   */
   underBandwidth(video) {
-    return video.bitrate() <= this.bandwidthInKbs * 1.25
+    const OVERHEAD_FACTOR_FOR_BANDWIDTH_CALCULATION = 1.25
+    return (
+      video.bitrate() <=
+      this.bandwidthInKbs * OVERHEAD_FACTOR_FOR_BANDWIDTH_CALCULATION
+    )
   }
 }
