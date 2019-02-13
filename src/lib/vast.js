@@ -2,6 +2,7 @@ import MediaFiles from './vast_elements/media_files'
 import Clickthrough from './vast_elements/clickthrough'
 import Impression from './vast_elements/impression'
 import TrackingEvents from './vast_elements/tracking_events'
+import StreamChooser from './stream_chooser'
 
 export default class Vast {
   constructor({ xml } = {}) {
@@ -57,7 +58,23 @@ export default class Vast {
     )
   }
 
-  /// private ----
+  bestVideo(
+    { width, height, bandwidth, mimeTypes } = {
+      width: 800,
+      height: 600,
+      bandwidth: null,
+      mimeTypes: null,
+    }
+  ) {
+    const chooser = new StreamChooser()
+    chooser.useVast(this)
+
+    if (bandwidth) chooser.setBandWidth(bandwidth)
+    if (mimeTypes) chooser.setSupportedMimeTypes(mimeTypes)
+
+    chooser.setPlayerDimensions({ width: width, height: height })
+    return chooser.bestVideo()
+  }
 
   parse() {
     if (!this.vastDocument) {

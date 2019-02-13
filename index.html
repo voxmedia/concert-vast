@@ -15,8 +15,14 @@
     ).then(r => {
       console.log(v.asHLSUrl())
       console.log('bandiwdth:', v.bandwidth())
-      var firstVideo = v.videos()[0]
-      console.log('videos', firstVideo.url())
+
+      var dim = document.querySelector('.video-js')
+
+      var firstVideo = v.bestVideo({
+        height: dim.clientHeight,
+        width: dim.clientWidth,
+      })
+      console.log('videos', firstVideo.url(), firstVideo)
 
       playerObject.src([
         // { type: 'application/x-mpegURL', src: v.asHLSUrl()},
