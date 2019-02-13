@@ -67,6 +67,20 @@ describe('Vast Videos', () => {
   })
 })
 
+describe('Vast tag is capable of returning the best video', () => {
+  let vast
+  beforeAll(() => {
+    const xmlString = fs.readFileSync('./test/fixtures/vast.xml')
+    vast = new Vast({ xml: xmlString })
+  })
+
+  it('supports bestVideo function', () => {
+    expect(typeof vast.bestVideo).toBe('function')
+    const vid = vast.bestVideo({ mimeTypes: ['video/mp4'] })
+    expect(vid.constructor.name).toBe('MediaFile')
+  })
+})
+
 describe('Vast Clickthrough', () => {
   let xmlString
 

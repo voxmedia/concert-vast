@@ -1,27 +1,57 @@
 <html>
-  <link href="https://vjs.zencdn.net/7.4.1/video-js.css" rel="stylesheet" />
   <head>
     <title>Test for ConcertVast</title>
+    <style>
+      input {
+        width: 100%;
+        margin: 20px 0;
+      }
+
+      video {
+        width: 100%;
+      }
+    </style>
   </head>
   <body>
-    <video class="video-js" controls width="640" height="360"></video>
+    <input
+      name="vastUrl"
+      value="https://ad.doubleclick.net/ddm/pfadx/N3493.3018656VOX-CONCERT/B22204404.238409492;sz=0x0;ord=[timestamp];dc_lat=;dc_rdid=;tag_for_child_directed_treatment=;tfua=;dcmt=text/xml;dc_vast=3"
+    />
+    <video controls></video>
   </body>
-  <script src="https://vjs.zencdn.net/7.4.1/video.js"></script>
   <script>
-    var playerObject = videojs(document.querySelector('.video-js'))
+    var videoElement = document.querySelector('video')
+    var urlElement = document.querySelector('[name="vastUrl"]')
     var v = new ConcertVast()
-    v.loadRemoteVast(
-      'https://ad.doubleclick.net/ddm/pfadx/N884.154386.EATER.COM/B21643693.231589573;sz=0x0;ord=[timestamp];dc_lat=;dc_rdid=;tag_for_child_directed_treatment=;tfua=;dcmt=text/xml'
-    ).then(r => {
-      console.log(v.asHLSUrl())
-      console.log('bandiwdth:', v.bandwidth())
-      var firstVideo = v.videos()[0]
-      console.log('videos', firstVideo.url())
+    function loadVast(url) {
+      v.loadRemoteVast(url).then(function() {
+        console.log('loading', url)
+        console.log('bandwidth:', v.bandwidth())
+        var bestVideo = v.bestVideo({
+          height: videoElement.clientHeight,
+          width: videoElement.clientWidth,
+        })
+        console.log(
+          'best video',
+          bestVideo.url(),
+          bestVideo.mimeType(),
+          bestVideo.bitrate()
+        )
 
-      playerObject.src([
-        // { type: 'application/x-mpegURL', src: v.asHLSUrl()},
-        { type: firstVideo.mimeType(), src: firstVideo.url() },
-      ])
+        Array.from(videoElement.querySelectorAll('source')).forEach(s => {
+          s.remove()
+        })
+        const vidSource = document.createElement('source')
+        vidSource.setAttribute('src', bestVideo.url())
+        vidSource.setAttribute('type', bestVideo.mimeType())
+        videoElement.appendChild(vidSource)
+        videoElement.load()
+      })
+    }
+    loadVast(urlElement.value)
+
+    urlElement.addEventListener('blur', e => {
+      loadVast(urlElement.value)
     })
   </script>
 </html>
