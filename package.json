@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "test": "jest --watch",
+    "test": "jest",
     "build": "webpack"
   },
   "devDependencies": {
