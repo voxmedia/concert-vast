@@ -1,0 +1,27 @@
+<html>
+  <link href="https://vjs.zencdn.net/7.4.1/video-js.css" rel="stylesheet" />
+  <head>
+    <title>Test for ConcertVast</title>
+  </head>
+  <body>
+    <video class="video-js" controls width="640" height="360"></video>
+  </body>
+  <script src="https://vjs.zencdn.net/7.4.1/video.js"></script>
+  <script>
+    var playerObject = videojs(document.querySelector('.video-js'))
+    var v = new ConcertVast()
+    v.loadRemoteVast(
+      'https://ad.doubleclick.net/ddm/pfadx/N884.154386.EATER.COM/B21643693.231589573;sz=0x0;ord=[timestamp];dc_lat=;dc_rdid=;tag_for_child_directed_treatment=;tfua=;dcmt=text/xml'
+    ).then(r => {
+      console.log(v.asHLSUrl())
+      console.log('bandiwdth:', v.bandwidth())
+      var firstVideo = v.videos()[0]
+      console.log('videos', firstVideo.url())
+
+      playerObject.src([
+        // { type: 'application/x-mpegURL', src: v.asHLSUrl()},
+        { type: firstVideo.mimeType(), src: firstVideo.url() },
+      ])
+    })
+  </script>
+</html>
