@@ -1,6 +1,7 @@
 import MediaFiles from './vast_elements/media_files'
 import Clickthrough from './vast_elements/clickthrough'
 import Impression from './vast_elements/impression'
+import TrackingEvents from './vast_elements/tracking_events'
 
 export default class Vast {
   constructor({ xml } = {}) {
@@ -13,6 +14,7 @@ export default class Vast {
       MediaFiles: new MediaFiles(this),
       Clickthrough: new Clickthrough(this),
       Impression: new Impression(this),
+      TrackingEvents: new TrackingEvents(this),
     }
 
     if (this.vastXml) {
@@ -42,6 +44,17 @@ export default class Vast {
 
   addImpressionUrls(doc = document) {
     return this.loadedElements['Impression'].addImpressionUrls(doc)
+  }
+
+  trackingUrlsFor(eventName) {
+    return this.loadedElements['TrackingEvents'].trackingUrlsFor(eventName)
+  }
+
+  addImpressionTrackingImagesFor(eventName, doc = document) {
+    return this.loadedElements['TrackingEvents'].addImpressionTrackingImagesFor(
+      eventName,
+      doc
+    )
   }
 
   /// private ----
