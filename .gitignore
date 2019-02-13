@@ -7,3 +7,4 @@ yarn-error.log
 .vscode
 dist/*.hot-update.*
 stats.json
+junit.xml
