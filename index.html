@@ -1,5 +1,4 @@
 <html>
-  <link href="https://vjs.zencdn.net/7.4.1/video-js.css" rel="stylesheet" />
   <head>
     <title>Test for ConcertVast</title>
     <style>
@@ -11,44 +10,42 @@
       video {
         width: 100%;
       }
-
-      .video-js .vjs-tech {
-        width: 100%;
-      }
-
-      .video-js .vjs-tech {
-        height: auto;
-      }
     </style>
   </head>
   <body>
     <input
       name="vastUrl"
-      value="https://ad.doubleclick.net/ddm/pfadx/N884.154386.EATER.COM/B21643693.231589573;sz=0x0;ord=[timestamp];dc_lat=;dc_rdid=;tag_for_child_directed_treatment=;tfua=;dcmt=text/xml"
+      value="https://ad.doubleclick.net/ddm/pfadx/N3493.3018656VOX-CONCERT/B22204404.238409492;sz=0x0;ord=[timestamp];dc_lat=;dc_rdid=;tag_for_child_directed_treatment=;tfua=;dcmt=text/xml;dc_vast=3"
     />
-    <video class="video-js" width="600px" controls></video>
+    <video controls></video>
   </body>
-  <script src="https://vjs.zencdn.net/7.4.1/video.js"></script>
   <script>
-    var playerObject = videojs(document.querySelector('.video-js'))
+    var videoElement = document.querySelector('video')
     var urlElement = document.querySelector('[name="vastUrl"]')
     var v = new ConcertVast()
     function loadVast(url) {
-      v.loadRemoteVast(url).then(r => {
-        console.log(v.asHLSUrl())
+      v.loadRemoteVast(url).then(function() {
+        console.log('loading', url)
         console.log('bandwidth:', v.bandwidth())
-
-        var videoElement = document.querySelector('.video-js')
-
-        var firstVideo = v.bestVideo({
+        var bestVideo = v.bestVideo({
           height: videoElement.clientHeight,
           width: videoElement.clientWidth,
         })
-        console.log('videos', firstVideo.url(), firstVideo)
+        console.log(
+          'best video',
+          bestVideo.url(),
+          bestVideo.mimeType(),
+          bestVideo.bitrate()
+        )
 
-        playerObject.src([
-          { type: firstVideo.mimeType(), src: firstVideo.url() },
-        ])
+        Array.from(videoElement.querySelectorAll('source')).forEach(s => {
+          s.remove()
+        })
+        const vidSource = document.createElement('source')
+        vidSource.setAttribute('src', bestVideo.url())
+        vidSource.setAttribute('type', bestVideo.mimeType())
+        videoElement.appendChild(vidSource)
+        videoElement.load()
       })
     }
     loadVast(urlElement.value)

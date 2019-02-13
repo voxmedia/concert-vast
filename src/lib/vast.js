@@ -104,6 +104,7 @@ export default class Vast {
           (downloadSize * 8) / (downloadTime / 1000) / 1024
 
         this.vastXml = request.response
+        this.vastDocument = null
         this.parse()
         resolve()
       })

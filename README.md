@@ -27,19 +27,19 @@ const bestVastVideo = cv.bestVideo({
 })
 
 // When using vanilla video element
-Array.from(videoElement.querySelectorAll('source'))
-     .forEach(s => s.remove())
-const source = document.createElement('source')
-source.attr("src",  bestVastVideo.url)​
-source.attr("type", bestVastVideo.mimeType)​
-videoElement.appendChild(source)
+Array.from(videoElement.querySelectorAll('source')).forEach(s => {
+  s.remove()
+})
+const vidSource = document.createElement('source')
+vidSource.setAttribute('src', bestVastVideo.url())
+vidSource.setAttribute('type', bestVastVideo.mimeType())
+videoElement.appendChild(vidSource)
+// Need to call load if you change the video source
+videoElement.load()
 
 // Or if using videojs
 const player = videoJs(videoElement)
-player.src([
-  { type: bestVastVideo.mimeType(), src: bestVastVideo.url() },
-])
-
+player.src([{ type: bestVastVideo.mimeType(), src: bestVastVideo.url() }])
 ```
 
 ### Clone it and Run it
