@@ -14,7 +14,7 @@ const cv = new ConcertVast()
 // Load the VAST URL, this is async so you can use
 // await or .then() to delay execution until the vast
 // tag has been parsed
-await loadRemoteVast(url)
+await cv.loadRemoteVast(url)
 
 // Use the rudamentary rendition selection process here
 // current accounts for
