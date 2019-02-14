@@ -22,54 +22,44 @@ describe('Internal Error Handling', () => {
     vast = new Vast({ xml: fs.readFileSync('./test/fixtures/vast.xml') })
   })
 
-  it('should have an onError callback handler', () => {
-    expect(typeof vast.onError).toBe('function')
-    vast.onError(() => {})
-  })
-
   it('should pass an XML parse error to the callback', () => {
-    let problem = null
-    vast.onError(e => {
-      problem = e
-    })
-    vast.useXmlString('not real xml')
-    expect(problem.constructor).toBe(VastXMLParsingError)
-    expect(problem.message).toMatch(/error parsing/i)
+    expect(() => {
+      vast.useXmlString('not real xml')
+    }).toThrow(VastXMLParsingError)
+    let caughtError
+    try {
+      vast.useXmlString('not real xml')
+    } catch (error) {
+      caughtError = error
+    }
+    expect(caughtError.message).toMatch(/error parsing/i)
   })
 
   it('should pass a network error to callback', async () => {
     mockXhr('error')
 
-    let errCallbackValue, caughtError
-
-    vast.onError(e => {
-      errCallbackValue = e
-    })
-
+    let caughtError
     try {
       await vast.loadRemoteVast('http://doodle.com')
     } catch (error) {
       caughtError = error
     }
     expect(caughtError.constructor).toBe(VastNetworkError)
-    expect(errCallbackValue.constructor).toBe(VastNetworkError)
+    expect(caughtError.message).toMatch(/network error/i)
+    expect(caughtError.message).toMatch(/status/i)
   })
 
   it('should send a network error, on timeout', async () => {
     mockXhr('timeout', '', 10)
 
-    let errCallbackValue, caughtError
-    vast.onError(e => {
-      errCallbackValue = e
-    })
-
+    let caughtError
     try {
       await vast.loadRemoteVast('http://doodle.com')
     } catch (error) {
       caughtError = error
     }
     expect(caughtError.constructor).toBe(VastNetworkError)
-    expect(errCallbackValue.constructor).toBe(VastNetworkError)
+    expect(caughtError.message).toMatch(/timeout/i)
   })
 })
 
@@ -112,6 +102,15 @@ describe('Vast Videos', () => {
   })
 })
 
+/**
+ * This is a bit of a mess, but it allows XHR requests to be mocked
+ * and certain events to be stimulated after some time.
+ * It is deterministic too
+ *
+ * @param {String} eventToFire The event to fire
+ * @param {String} response The value to set response and responseText to
+ * @param {Integer} eventDelay The delay in MS before firing the event specified
+ */
 const mockXhr = (eventToFire = 'load', response = '', eventDelay = 100) => {
   const xhrMockClass = () => ({
     open: jest.fn(),

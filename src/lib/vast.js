@@ -14,7 +14,6 @@ export default class Vast {
     this.vastUrl = null
     this.vastDocument = null
     this.bandwidthEstimateInKbs = 0
-    this.errorCallbacks = []
 
     this.loadedElements = {
       MediaFiles: new MediaFiles(this),
@@ -33,10 +32,6 @@ export default class Vast {
     this.vastXml = xml
     this.vastDocument = null
     this.parse()
-  }
-
-  onError(callback) {
-    this.errorCallbacks.push(callback)
   }
 
   bandwidth() {
@@ -109,14 +104,11 @@ export default class Vast {
         'application/xml'
       )
       if (this.vastDocument.documentElement.nodeName == 'parsererror') {
-        this.handleError(
-          new VastXMLParsingError(
-            `Error parsing ${this.vastXml}. Not valid XML`
-          )
+        throw new VastXMLParsingError(
+          `Error parsing ${this.vastXml}. Not valid XML`
         )
-      } else {
-        this.processAllElements()
       }
+      this.processAllElements()
     }
   }
 
@@ -141,31 +133,27 @@ export default class Vast {
       })
 
       request.addEventListener('error', e => {
-        const err = new VastNetworkError('Network Error')
-        this.handleError(err)
-        reject(err)
+        reject(
+          new VastNetworkError(
+            `Network Error: Request status: ${request.status}, ${
+              request.responseText
+            }`
+          )
+        )
       })
 
       request.addEventListener('abort', e => {
-        const err = new VastNetworkError('Network Aborted')
-        this.handleError(err)
-        reject(err)
+        reject(new VastNetworkError('Network Aborted'))
       })
 
       request.addEventListener('timeout', e => {
-        const err = new VastNetworkError('Network Timeout')
-        this.handleError(err)
-        reject(err)
+        reject(new VastNetworkError('Network Timeout'))
       })
 
       startTime = new Date().getTime()
       request.open('GET', this.vastUrl)
       request.send()
     })
-  }
-
-  handleError(error) {
-    this.errorCallbacks.forEach(cb => cb.call(this, error))
   }
 
   processAllElements() {
