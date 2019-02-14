@@ -8,15 +8,17 @@ describe('External error handling', () => {
   })
 
   it('should support return the error pixel urls', () => {
-    expect(typeof vast.errorUrls).toBe('function')
-    expect(vast.errorUrls()[0]).toMatch(/^https:\/\/ade\.googlesyndication/)
-    expect(vast.errorUrls().length).toBe(1)
+    expect(typeof vast.errorImpressionUrls).toBe('function')
+    expect(vast.errorImpressionUrls()[0]).toMatch(
+      /^https:\/\/ade\.googlesyndication/
+    )
+    expect(vast.errorImpressionUrls().length).toBe(1)
   })
 
   it('should support adding the error pixel(s) to the page on error', () => {
-    expect(typeof vast.addErrorUrls).toBe('function')
+    expect(typeof vast.addErrorImpressionUrls).toBe('function')
     const imgCount = document.querySelectorAll('img').length
-    vast.addErrorUrls()
+    vast.addErrorImpressionUrls()
     expect(document.querySelectorAll('img').length).toEqual(imgCount + 1)
   })
 })

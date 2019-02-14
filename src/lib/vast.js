@@ -58,11 +58,11 @@ export default class Vast {
     return this.loadedElements['Impression'].addImpressionUrls(doc)
   }
 
-  errorUrls() {
+  errorImpressionUrls() {
     return this.loadedElements['ErrorImpression'].impressionUrls()
   }
 
-  addErrorUrls(doc = document) {
+  addErrorImpressionUrls(doc = document) {
     return this.loadedElements['ErrorImpression'].addImpressionUrls(doc)
   }
 
