@@ -64,17 +64,6 @@ describe('Internal Error Handling', () => {
   // })
 })
 
-describe('External error handling', () => {
-  let vast
-  beforeEach(() => {
-    vast = new Vast({ xml: fs.readFileSync('./test/fixtures/vast.xml') })
-  })
-
-  it('should support adding the error pixel(s) to the page on error', () => {
-    expect(typeof vast.addErrorUrls).toBe('function')
-  })
-})
-
 describe('vast remote xml loading', () => {
   beforeEach(() => {
     const responseXml = fs.readFileSync('./test/fixtures/vast.xml')

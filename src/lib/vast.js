@@ -1,6 +1,7 @@
 import MediaFiles from './vast_elements/media_files'
 import Clickthrough from './vast_elements/clickthrough'
 import Impression from './vast_elements/impression'
+import ErrorImpression from './vast_elements/error_impression'
 import TrackingEvents from './vast_elements/tracking_events'
 import StreamChooser from './stream_chooser'
 
@@ -25,6 +26,7 @@ export default class Vast {
       MediaFiles: new MediaFiles(this),
       Clickthrough: new Clickthrough(this),
       Impression: new Impression(this),
+      ErrorImpression: new ErrorImpression(this),
       TrackingEvents: new TrackingEvents(this),
     }
 
@@ -65,6 +67,14 @@ export default class Vast {
 
   addImpressionUrls(doc = document) {
     return this.loadedElements['Impression'].addImpressionUrls(doc)
+  }
+
+  errorUrls() {
+    return this.loadedElements['ErrorImpression'].impressionUrls()
+  }
+
+  addErrorUrls(doc = document) {
+    return this.loadedElements['ErrorImpression'].addImpressionUrls(doc)
   }
 
   trackingUrlsFor(eventName) {
