@@ -4,12 +4,22 @@ import Impression from './vast_elements/impression'
 import TrackingEvents from './vast_elements/tracking_events'
 import StreamChooser from './stream_chooser'
 
+class FakeError {
+  constructor(message) {
+    console.log('constructing', message)
+    this.message = message
+  }
+}
+export class VastXMLParsingError extends FakeError {}
+export class VastNetworkError extends FakeError {}
+
 export default class Vast {
   constructor({ xml } = {}) {
-    this.vastXml = xml
+    this.vastXml = null
     this.vastUrl = null
     this.vastDocument = null
     this.bandwidthEstimateInKbs = 0
+    this.errorCallbacks = []
 
     this.loadedElements = {
       MediaFiles: new MediaFiles(this),
@@ -18,9 +28,19 @@ export default class Vast {
       TrackingEvents: new TrackingEvents(this),
     }
 
-    if (this.vastXml) {
-      this.parse()
+    if (xml) {
+      this.useXmlString(xml)
     }
+  }
+
+  useXmlString(xml) {
+    this.vastXml = xml
+    this.vastDocument = null
+    this.parse()
+  }
+
+  onError(callback) {
+    this.errorCallbacks.push(callback)
   }
 
   bandwidth() {
@@ -84,7 +104,15 @@ export default class Vast {
         this.vastXml,
         'application/xml'
       )
-      this.processAllElements()
+      if (this.vastDocument.documentElement.nodeName == 'parsererror') {
+        this.handleError(
+          new VastXMLParsingError(
+            `Error parsing ${this.vastXml}. Not valid XML`
+          )
+        )
+      } else {
+        this.processAllElements()
+      }
     }
   }
 
@@ -92,6 +120,7 @@ export default class Vast {
     return new Promise((resolve, reject) => {
       this.vastUrl = url
       const request = new XMLHttpRequest()
+      request.timeout = 2000
       let startTime
       let endTime
 
@@ -103,22 +132,36 @@ export default class Vast {
         this.bandwidthEstimateInKbs =
           (downloadSize * 8) / (downloadTime / 1000) / 1024
 
-        this.vastXml = request.response
-        this.vastDocument = null
-        this.parse()
+        this.useXmlString(request.response)
         resolve()
       })
 
       request.addEventListener('error', e => {
-        console.log('failed', e)
-        // todo should not reject here, but do something else
-        reject()
+        const err = new VastNetworkError('Network Error')
+        this.handleError(err)
+        reject(err)
+      })
+
+      request.addEventListener('abort', e => {
+        const err = new VastNetworkError('Network Aborted')
+        this.handleError(err)
+        reject(err)
+      })
+
+      request.addEventListener('timeout', e => {
+        const err = new VastNetworkError('Network Timeout')
+        this.handleError(err)
+        reject(err)
       })
 
       startTime = new Date().getTime()
       request.open('GET', this.vastUrl)
       request.send()
     })
+  }
+
+  handleError(error) {
+    this.errorCallbacks.forEach(cb => cb.call(this, error))
   }
 
   processAllElements() {

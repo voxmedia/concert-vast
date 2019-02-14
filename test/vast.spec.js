@@ -1,4 +1,4 @@
-import Vast from '../src/lib/vast'
+import Vast, { VastXMLParsingError, VastNetworkError } from '../src/lib/vast'
 import * as fs from 'fs'
 
 const REMOTE_URL =
@@ -16,22 +16,69 @@ describe('Basic Vast class functions', () => {
   })
 })
 
+describe('Internal Error Handling', () => {
+  let vast
+  beforeEach(() => {
+    vast = new Vast({ xml: fs.readFileSync('./test/fixtures/vast.xml') })
+  })
+
+  it('should have an onError callback handler', () => {
+    expect(typeof vast.onError).toBe('function')
+    vast.onError(() => {})
+  })
+
+  it('should pass an XML parse error to the callback', () => {
+    let problem = null
+    vast.onError(e => {
+      problem = e
+    })
+    vast.useXmlString('not real xml')
+    expect(problem.constructor).toBe(VastXMLParsingError)
+    expect(problem.message).toMatch(/error parsing/i)
+  })
+
+  // it('should pass a network error to callback', async () => {
+  //   mockXhr('error')
+
+  //   let err
+  //   vast.onError((e) => {
+  //     console.log('got e', e)
+  //     err = e
+  //   })
+
+  //   await vast.loadRemoteVast('http://doodle.com')
+  //   // expect(err.constructor).toBe(VastNetworkError)
+  // })
+
+  // it('should send a network error, on timeout', async () => {
+  //   const responseXml = fs.readFileSync('./test/fixtures/vast.xml')
+  //   mockXhr('timeout', '', 10)
+
+  //   let err
+  //   vast.onError((e) => {
+  //     err = e
+  //   })
+
+  //   await vast.loadRemoteVast('http://doodle.com')
+  //   expect(err.constructor).toBe(VastNetworkError)
+  // })
+})
+
+describe('External error handling', () => {
+  let vast
+  beforeEach(() => {
+    vast = new Vast({ xml: fs.readFileSync('./test/fixtures/vast.xml') })
+  })
+
+  it('should support adding the error pixel(s) to the page on error', () => {
+    expect(typeof vast.addErrorUrls).toBe('function')
+  })
+})
+
 describe('vast remote xml loading', () => {
   beforeEach(() => {
     const responseXml = fs.readFileSync('./test/fixtures/vast.xml')
-    const xhrMockClass = () => ({
-      open: jest.fn(),
-      send: jest.fn(),
-      responseText: responseXml,
-      response: responseXml,
-      addEventListener: jest.fn((eventName, func) => {
-        if (eventName == 'load') {
-          setTimeout(func, 100)
-        }
-      }),
-      setRequestHeader: jest.fn(),
-    })
-    window.XMLHttpRequest = jest.fn().mockImplementation(xhrMockClass)
+    mockXhr('load', responseXml)
   })
 
   it('it can be loaded from a remote url', async () => {
@@ -66,6 +113,25 @@ describe('Vast Videos', () => {
     expect(videos.length).toBe(10)
   })
 })
+
+const mockXhr = (eventToFire = 'load', response = '', eventDelay = 100) => {
+  const xhrMockClass = () => ({
+    open: jest.fn(),
+    send: jest.fn(),
+    responseText: response,
+    response: response,
+    addEventListener: jest.fn((eventName, func) => {
+      // console.log('adding fake listener for', eventName, 'stimulating', eventToFire)
+      if (eventName == eventToFire) {
+        setTimeout(() => {
+          func({ message: eventToFire })
+        }, eventDelay)
+      }
+    }),
+    setRequestHeader: jest.fn(),
+  })
+  window.XMLHttpRequest = jest.fn().mockImplementation(xhrMockClass)
+}
 
 describe('Vast tag is capable of returning the best video', () => {
   let vast
