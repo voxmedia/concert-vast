@@ -112,11 +112,11 @@ export default class Vast {
     }
   }
 
-  async loadRemoteVast(url) {
+  async loadRemoteVast(url, { timeout } = { timeout: 10000 }) {
     return new Promise((resolve, reject) => {
       this.vastUrl = url
       const request = new XMLHttpRequest()
-      request.timeout = 2000
+      request.timeout = timeout
       let startTime
       let endTime
 
@@ -147,7 +147,11 @@ export default class Vast {
       })
 
       request.addEventListener('timeout', e => {
-        reject(new VastNetworkError('Network Timeout'))
+        reject(
+          new VastNetworkError(
+            `Network Timeout: Request did not complete in ${timeout}ms`
+          )
+        )
       })
 
       startTime = new Date().getTime()

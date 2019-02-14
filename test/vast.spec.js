@@ -86,6 +86,14 @@ describe('vast remote xml loading', () => {
     const vast = new Vast()
     expect(vast.bandwidth()).toBe(0)
   })
+
+  it('should allow for a new timeout value to be set', async () => {
+    // TODO: I don't know how to test this
+    // const vast = new Vast()
+    // mockXhr('load', '<xml></xml>', 100)
+    // await vast.loadRemoteVast(REMOTE_URL, {timeout: 1})
+    // expect(caughtError.constructor).toBe(VastNetworkError)
+  })
 })
 
 describe('Vast Videos', () => {
