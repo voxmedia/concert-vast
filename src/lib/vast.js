@@ -118,12 +118,9 @@ export default class Vast {
       const request = new XMLHttpRequest()
       request.timeout = timeout
       let startTime
-      let endTime
 
       request.addEventListener('load', e => {
-        endTime = new Date().getTime()
-
-        const downloadTime = endTime - startTime
+        const downloadTime = new Date().getTime() - startTime
         const downloadSize = request.responseText.length
         this.bandwidthEstimateInKbs =
           (downloadSize * 8) / (downloadTime / 1000) / 1024
