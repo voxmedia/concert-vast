@@ -37,31 +37,40 @@ describe('Internal Error Handling', () => {
     expect(problem.message).toMatch(/error parsing/i)
   })
 
-  // it('should pass a network error to callback', async () => {
-  //   mockXhr('error')
+  it('should pass a network error to callback', async () => {
+    mockXhr('error')
 
-  //   let err
-  //   vast.onError((e) => {
-  //     console.log('got e', e)
-  //     err = e
-  //   })
+    let errCallbackValue, caughtError
 
-  //   await vast.loadRemoteVast('http://doodle.com')
-  //   // expect(err.constructor).toBe(VastNetworkError)
-  // })
+    vast.onError(e => {
+      errCallbackValue = e
+    })
 
-  // it('should send a network error, on timeout', async () => {
-  //   const responseXml = fs.readFileSync('./test/fixtures/vast.xml')
-  //   mockXhr('timeout', '', 10)
+    try {
+      await vast.loadRemoteVast('http://doodle.com')
+    } catch (error) {
+      caughtError = error
+    }
+    expect(caughtError.constructor).toBe(VastNetworkError)
+    expect(errCallbackValue.constructor).toBe(VastNetworkError)
+  })
 
-  //   let err
-  //   vast.onError((e) => {
-  //     err = e
-  //   })
+  it('should send a network error, on timeout', async () => {
+    mockXhr('timeout', '', 10)
 
-  //   await vast.loadRemoteVast('http://doodle.com')
-  //   expect(err.constructor).toBe(VastNetworkError)
-  // })
+    let errCallbackValue, caughtError
+    vast.onError(e => {
+      errCallbackValue = e
+    })
+
+    try {
+      await vast.loadRemoteVast('http://doodle.com')
+    } catch (error) {
+      caughtError = error
+    }
+    expect(caughtError.constructor).toBe(VastNetworkError)
+    expect(errCallbackValue.constructor).toBe(VastNetworkError)
+  })
 })
 
 describe('vast remote xml loading', () => {
