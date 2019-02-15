@@ -1,4 +1,4 @@
-import Vast from '../src/lib/vast'
+import Vast, { VastXMLParsingError, VastNetworkError } from '../src/lib/vast'
 import * as fs from 'fs'
 
 const REMOTE_URL =
@@ -16,22 +16,57 @@ describe('Basic Vast class functions', () => {
   })
 })
 
+describe('Internal Error Handling', () => {
+  let vast
+  beforeEach(() => {
+    vast = new Vast({ xml: fs.readFileSync('./test/fixtures/vast.xml') })
+  })
+
+  it('should pass an XML parse error to the callback', () => {
+    expect(() => {
+      vast.useXmlString('not real xml')
+    }).toThrow(VastXMLParsingError)
+    let caughtError
+    try {
+      vast.useXmlString('not real xml')
+    } catch (error) {
+      caughtError = error
+    }
+    expect(caughtError.message).toMatch(/error parsing/i)
+  })
+
+  it('should pass a network error to callback', async () => {
+    mockXhr('error')
+
+    let caughtError
+    try {
+      await vast.loadRemoteVast('http://doodle.com')
+    } catch (error) {
+      caughtError = error
+    }
+    expect(caughtError.constructor).toBe(VastNetworkError)
+    expect(caughtError.message).toMatch(/network error/i)
+    expect(caughtError.message).toMatch(/status/i)
+  })
+
+  it('should send a network error, on timeout', async () => {
+    mockXhr('timeout', '', 10)
+
+    let caughtError
+    try {
+      await vast.loadRemoteVast('http://doodle.com')
+    } catch (error) {
+      caughtError = error
+    }
+    expect(caughtError.constructor).toBe(VastNetworkError)
+    expect(caughtError.message).toMatch(/timeout/i)
+  })
+})
+
 describe('vast remote xml loading', () => {
   beforeEach(() => {
     const responseXml = fs.readFileSync('./test/fixtures/vast.xml')
-    const xhrMockClass = () => ({
-      open: jest.fn(),
-      send: jest.fn(),
-      responseText: responseXml,
-      response: responseXml,
-      addEventListener: jest.fn((eventName, func) => {
-        if (eventName == 'load') {
-          setTimeout(func, 100)
-        }
-      }),
-      setRequestHeader: jest.fn(),
-    })
-    window.XMLHttpRequest = jest.fn().mockImplementation(xhrMockClass)
+    mockXhr('load', responseXml)
   })
 
   it('it can be loaded from a remote url', async () => {
@@ -51,6 +86,14 @@ describe('vast remote xml loading', () => {
     const vast = new Vast()
     expect(vast.bandwidth()).toBe(0)
   })
+
+  it('should allow for a new timeout value to be set', async () => {
+    // TODO: I don't know how to test this
+    // const vast = new Vast()
+    // mockXhr('load', '<xml></xml>', 100)
+    // await vast.loadRemoteVast(REMOTE_URL, {timeout: 1})
+    // expect(caughtError.constructor).toBe(VastNetworkError)
+  })
 })
 
 describe('Vast Videos', () => {
@@ -67,6 +110,34 @@ describe('Vast Videos', () => {
   })
 })
 
+/**
+ * This is a bit of a mess, but it allows XHR requests to be mocked
+ * and certain events to be stimulated after some time.
+ * It is deterministic too
+ *
+ * @param {String} eventToFire The event to fire
+ * @param {String} response The value to set response and responseText to
+ * @param {Integer} eventDelay The delay in MS before firing the event specified
+ */
+const mockXhr = (eventToFire = 'load', response = '', eventDelay = 100) => {
+  const xhrMockClass = () => ({
+    open: jest.fn(),
+    send: jest.fn(),
+    responseText: response,
+    response: response,
+    addEventListener: jest.fn((eventName, func) => {
+      // console.log('adding fake listener for', eventName, 'stimulating', eventToFire)
+      if (eventName == eventToFire) {
+        setTimeout(() => {
+          func({ message: eventToFire })
+        }, eventDelay)
+      }
+    }),
+    setRequestHeader: jest.fn(),
+  })
+  window.XMLHttpRequest = jest.fn().mockImplementation(xhrMockClass)
+}
+
 describe('Vast tag is capable of returning the best video', () => {
   let vast
   beforeAll(() => {
@@ -78,21 +149,5 @@ describe('Vast tag is capable of returning the best video', () => {
     expect(typeof vast.bestVideo).toBe('function')
     const vid = vast.bestVideo({ mimeTypes: ['video/mp4'] })
     expect(vid.constructor.name).toBe('MediaFile')
-  })
-})
-
-describe('Vast Clickthrough', () => {
-  let xmlString
-
-  beforeAll(() => {
-    xmlString = fs.readFileSync('./test/fixtures/vast.xml')
-  })
-
-  it('should return a click through', () => {
-    const vast = new Vast({ xml: xmlString })
-    expect(vast.clickthroughUrl()).toMatch(/^https:/)
-    expect(vast.clickthroughUrl()).toBe(
-      'https://adclick.g.doubleclick.net/pcs/click?xai=AKAOjsu6OYO6ScslHz6Ie0kqub5FCVUAxcJO1oOJ8eLjzG_onZ5wMdGPn-HE7YryuBvxvcekq_rLQrDY-aOhipXfK-hErA&sig=Cg0ArKJSzLIFAUkswSyTEAE&urlfix=1&adurl=https://nfl.demdex.net/event%3Fd_event%3Dclick%26d_adsrc%3D27510%26d_bu%3D901%26d_src%3D27511%26d_site%3D1106053%26d_campaign%3D21643693%26d_rd%3Dhttp://www.nfl.com'
-    )
   })
 })

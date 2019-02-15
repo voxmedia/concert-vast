@@ -28,22 +28,9 @@ export default class StreamChooser {
 
   bestVideo() {
     const matchingFormats = this.videos.filter(v => this.compatibleFormats(v))
-    console.log('matchingFormats', matchingFormats.map(v => v.mimeType()))
-
     const closestSize = matchingFormats.sort((a, b) => this.closestSized(a, b))
-    console.log(
-      'closestSize',
-      closestSize.map(v => v.width() + 'x' + v.height() + '@' + v.bitrate())
-    )
-
     const notExceedingBandwidth = closestSize.filter(v =>
       this.underBandwidth(v)
-    )
-    console.log(
-      'notExceedingBandwidth',
-      notExceedingBandwidth.map(
-        v => v.width() + 'x' + v.height() + '@' + v.bitrate()
-      )
     )
 
     if (matchingFormats.length <= 1) return matchingFormats[0]
