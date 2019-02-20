@@ -12,7 +12,7 @@ export default class VideoElement {
     this.vast = null
   }
 
-  apply({ vast, videoElement }) {
+  applyAsPreroll({ vast, videoElement }) {
     this.vast = vast
     this.videoElement = videoElement
     this.quartilesExperienced = []
