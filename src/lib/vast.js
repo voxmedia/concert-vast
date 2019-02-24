@@ -3,6 +3,7 @@ import Clickthrough from './vast_elements/clickthrough'
 import Impression from './vast_elements/impression'
 import TrackingEvents from './vast_elements/tracking_events'
 import StreamChooser from './stream_chooser'
+import VideoElementApplication from './applications/video_element'
 
 export default class Vast {
   constructor({ xml } = {}) {
@@ -39,6 +40,10 @@ export default class Vast {
     return this.loadedElements['Clickthrough'].clickthroughUrl()
   }
 
+  openClickthroughUrl() {
+    return this.loadedElements['Clickthrough'].openClickthroughUrl()
+  }
+
   impressionUrls() {
     return this.loadedElements['Impression'].impressionUrls()
   }
@@ -56,6 +61,11 @@ export default class Vast {
       eventName,
       doc
     )
+  }
+
+  applyToVideoElementAsPreroll(videoElement) {
+    const vea = new VideoElementApplication()
+    vea.applyAsPreroll({ vast: this, videoElement: videoElement })
   }
 
   bestVideo(
@@ -114,7 +124,6 @@ export default class Vast {
         // todo should not reject here, but do something else
         reject()
       })
-
       startTime = new Date().getTime()
       request.open('GET', this.vastUrl)
       request.send()

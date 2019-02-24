@@ -18,4 +18,9 @@ export default class Clickthrough extends VastElementBase {
   clickthroughUrl() {
     return this.clickthrough
   }
+
+  openClickthroughUrl() {
+    const win = window.open(this.clickthroughUrl(), '_blank')
+    win.focus()
+  }
 }
