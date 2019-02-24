@@ -15,7 +15,7 @@
   <body>
     <input
       name="vastUrl"
-      value="https://ad.doubleclick.net/ddm/pfadx/N3493.3018656VOX-CONCERT/B22204404.238409492;sz=0x0;ord=[timestamp];dc_lat=;dc_rdid=;tag_for_child_directed_treatment=;tfua=;dcmt=text/xml;dc_vast=3"
+      value="https://ad.doubleclick.net/ddm/pfadx/N3493.3018656VOX-CONCERT/B22204404.238409492;sz=0x0;ord=%5Btimestamp%5D;dc_lat=;dc_rdid=;tag_for_child_directed_treatment=;tfua=;dcmt=text/xml;dc_vast=3"
     />
     <video controls></video>
   </body>
@@ -24,30 +24,11 @@
     var urlElement = document.querySelector('[name="vastUrl"]')
     var v = new ConcertVast()
     function loadVast(url) {
-      v.loadRemoteVast(url).then(function() {
-        console.log('loading', url)
-        console.log('bandwidth:', v.bandwidth())
-        var bestVideo = v.bestVideo({
-          height: videoElement.clientHeight,
-          width: videoElement.clientWidth,
-        })
-        console.log(
-          'best video',
-          bestVideo.url(),
-          bestVideo.mimeType(),
-          bestVideo.bitrate()
-        )
-
-        Array.from(videoElement.querySelectorAll('source')).forEach(s => {
-          s.remove()
-        })
-        const vidSource = document.createElement('source')
-        vidSource.setAttribute('src', bestVideo.url())
-        vidSource.setAttribute('type', bestVideo.mimeType())
-        videoElement.appendChild(vidSource)
-        videoElement.load()
+      v.loadRemoteVast(urlElement.value).then(e => {
+        v.applyToVideoElementAsPreroll(videoElement)
       })
     }
+
     loadVast(urlElement.value)
 
     urlElement.addEventListener('blur', e => {
