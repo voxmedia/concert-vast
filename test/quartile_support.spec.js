@@ -24,6 +24,26 @@ describe('Callbacks for changes', () => {
     qs = new QuartileSupport()
   })
 
+  it('should not set start  on 0s', () => {
+    let lastQName = null
+    qs.onQuartileChange(quartileName => {
+      lastQName = quartileName
+    })
+    qs.setDuration(10)
+    qs.setCurrentTime(0)
+    expect(lastQName).toEqual(null)
+  })
+
+  it('should set start on 0.01s', () => {
+    let lastQName = null
+    qs.onQuartileChange(quartileName => {
+      lastQName = quartileName
+    })
+    qs.setDuration(100)
+    qs.setCurrentTime(0.01)
+    expect(lastQName).toEqual('start')
+  })
+
   it('should call a callback after 26 percent complete', () => {
     let lastQName = null
     qs.onQuartileChange(quartileName => {

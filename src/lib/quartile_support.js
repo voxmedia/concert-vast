@@ -35,7 +35,7 @@ export default class QuartileSupport {
   checkForQuartileEvent() {
     const percentComplete = this.currentTime / this.duration
     const matchingQuartiles = QUARTILES.filter(quartile => {
-      return quartile[0] <= percentComplete
+      return quartile[0] < percentComplete
     })
 
     matchingQuartiles.forEach(quartile => {
