@@ -44,10 +44,7 @@ export default class VideoElement {
 
   setupVideoEventListeners() {
     // handle mute support
-    this.videoElement.addEventListener(
-      'volumechange',
-      this.muteObserver.bind(this)
-    )
+    this.videoElement.addEventListener('volumechange', this.muteObserver.bind(this))
 
     for (const nativeEventName in EVENT_MAPPING) {
       this.videoElement.addEventListener(nativeEventName, () => {
@@ -62,18 +59,10 @@ export default class VideoElement {
     })
 
     this.videoElement.addEventListener('click', this.clickObserver.bind(this))
-
-    this.videoElement.addEventListener(
-      'loadedmetadata',
-      this.updateQuartileDuration.bind(this)
-    )
-    this.videoElement.addEventListener(
-      'durationchange',
-      this.updateQuartileDuration.bind(this)
-    )
-
-    document.addEventListener('fullscreenchange', this.fullscreenObserver)
-    document.addEventListener('webkitfullscreenchange', this.fullscreenObserver)
+    this.videoElement.addEventListener('loadedmetadata', this.updateQuartileDuration.bind(this))
+    this.videoElement.addEventListener('durationchange', this.updateQuartileDuration.bind(this))
+    document.addEventListener('fullscreenchange', this.fullscreenObserver.bind(this))
+    document.addEventListener('webkitfullscreenchange', this.fullscreenObserver.bind(this))
   }
 
   loadVastVideo() {
@@ -102,15 +91,10 @@ export default class VideoElement {
 
     if (this.previousVolume <= 0 && this.videoElement.volume != 0) {
       this.vast.addImpressionTrackingImagesFor('unmute')
-    } else if (
-      (this.previousVolume > 0 && this.videoElement.volume == 0) ||
-      this.videoElement.muted
-    ) {
+    } else if ((this.previousVolume > 0 && this.videoElement.volume == 0) || this.videoElement.muted) {
       this.vast.addImpressionTrackingImagesFor('mute')
     }
-    this.previousVolume = this.videoElement.muted
-      ? -1
-      : this.videoElement.volume
+    this.previousVolume = this.videoElement.muted ? -1 : this.videoElement.volume
   }
 
   clickObserver(clickEvent) {
