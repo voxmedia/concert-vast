@@ -39,7 +39,16 @@ const cv = new ConcertVast()
 // Load the VAST URL, this is async so you can use
 // await or .then() to delay execution until the vast
 // tag has been parsed
-await cv.loadRemoteVast(url)
+//
+// Optionally a timeout parameter (in ms) can be passed in to specify
+// how long to wait for a vast response
+try {
+  await cv.loadRemoteVast(url, { timeout: 10000 })
+} catch (error) {
+  // if this raises an error, it is for the following reasons:
+  // - there was a network error (VastNetworkError)
+  // - the XML could not be parsed (VastXMLParsingError)
+}
 
 // Use the rudamentary rendition selection process here
 // current accounts for

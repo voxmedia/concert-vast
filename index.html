@@ -27,9 +27,28 @@
     var urlElement = document.querySelector('[name="vastUrl"]')
     var v = new ConcertVast()
     function loadVast(url) {
-      v.loadRemoteVast(urlElement.value).then(e => {
-        v.applyToVideoElementAsPreroll(videoElement)
-      })
+      v.loadRemoteVast(url, { timeout: 10000 })
+        .then(function() {
+          console.log('loading', url)
+          console.log('bandwidth:', v.bandwidth())
+          var bestVideo = v.bestVideo({
+            height: videoElement.clientHeight,
+            width: videoElement.clientWidth,
+          })
+          console.log('best video', bestVideo.url(), bestVideo.mimeType(), bestVideo.bitrate())
+
+          Array.from(videoElement.querySelectorAll('source')).forEach(s => {
+            s.remove()
+          })
+          const vidSource = document.createElement('source')
+          vidSource.setAttribute('src', bestVideo.url())
+          vidSource.setAttribute('type', bestVideo.mimeType())
+          videoElement.appendChild(vidSource)
+          videoElement.load()
+        })
+        .catch(error => {
+          console.log("Can't load video, you got yourself an error", error)
+        })
     }
 
     loadVast(urlElement.value)
