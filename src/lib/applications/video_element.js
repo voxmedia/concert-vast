@@ -63,8 +63,15 @@ export default class VideoElement {
     })
 
     this.videoElement.addEventListener('play', () => {
+      if (!this.vastPresented()) return
       this.videoElement.classList.add(VAST_PLAYING_CLASS)
     })
+
+    this.videoElement.addEventListener('ended', () => {
+      if (!this.vastPresented()) return
+      this.videoElement.classList.remove(VAST_PLAYING_CLASS)
+    })
+
     this.videoElement.addEventListener('click', this.clickObserver.bind(this))
     this.videoElement.addEventListener('loadedmetadata', this.updateQuartileDuration.bind(this))
     this.videoElement.addEventListener('durationchange', this.updateQuartileDuration.bind(this))
