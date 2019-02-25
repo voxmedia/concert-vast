@@ -8,6 +8,7 @@ const EVENT_MAPPING = {
 const VIDEO_CONTROLS_HEIGHT = 50
 const VAST_LOADED_CLASS = 'vast-running'
 const VAST_PLAYING_CLASS = 'vast-playing'
+const VAST_DELAYED_ATTRIBUTE = 'vast-delayed-src'
 
 export default class VideoElement {
   constructor() {
@@ -15,6 +16,7 @@ export default class VideoElement {
     this.vast = null
     this.previousVolume = 0
     this._vastPresented = null
+    this.restoreVideoPlayer = false
   }
 
   applyAsPreroll({ vast, videoElement }) {
@@ -23,6 +25,7 @@ export default class VideoElement {
     this.previousVolume = this.videoElement.volume
     this.quartileSupport = new QuartileSupport()
     this._vastPresented = true
+    this.restoreVideoPlayer = true
 
     this.addClassToVideo()
     this.pauseExistingVideoSources()
@@ -41,7 +44,7 @@ export default class VideoElement {
 
   pauseExistingVideoSources() {
     Array.from(this.videoElement.querySelectorAll('source')).forEach(n => {
-      n.setAttribute('vast-delayed-src', n.getAttribute('src'))
+      n.setAttribute(VAST_DELAYED_ATTRIBUTE, n.getAttribute('src'))
       n.setAttribute('src', null)
     })
   }
@@ -67,10 +70,7 @@ export default class VideoElement {
       this.videoElement.classList.add(VAST_PLAYING_CLASS)
     })
 
-    this.videoElement.addEventListener('ended', () => {
-      if (!this.vastPresented()) return
-      this.videoElement.classList.remove(VAST_PLAYING_CLASS)
-    })
+    this.videoElement.addEventListener('ended', this.vastVideoEndedObserver.bind(this))
 
     this.videoElement.addEventListener('click', this.clickObserver.bind(this))
     this.videoElement.addEventListener('loadedmetadata', this.updateQuartileDuration.bind(this))
@@ -87,6 +87,7 @@ export default class VideoElement {
     const videoSource = document.createElement('source')
 
     videoSource.setAttribute('src', bestVideo.url())
+    videoSource.setAttribute('vast-added', true)
     videoSource.setAttribute('type', bestVideo.mimeType())
     this.videoElement.appendChild(videoSource)
     this.videoElement.load()
@@ -102,6 +103,30 @@ export default class VideoElement {
 
   setupImpressions() {
     this.vast.addImpressionUrls()
+  }
+
+  vastVideoEndedObserver() {
+    console.log('video is ended')
+    if (!this.vastPresented()) return
+    this.videoElement.classList.remove(VAST_PLAYING_CLASS)
+
+    if (!this.restoreVideoPlayer) return
+    this.videoElement.classList.remove(VAST_LOADED_CLASS)
+
+    this._vastPresented = false
+
+    Array.from(this.videoElement.querySelectorAll('source[vast-added="true"]')).forEach(n => {
+      n.remove()
+    })
+
+    Array.from(this.videoElement.querySelectorAll('source')).forEach(n => {
+      n.setAttribute('src', n.getAttribute(VAST_DELAYED_ATTRIBUTE))
+      if (n.removeAttribute) {
+        n.removeAttribute(VAST_DELAYED_ATTRIBUTE)
+      }
+    })
+
+    this.videoElement.load()
   }
 
   muteObserver() {
@@ -122,18 +147,12 @@ export default class VideoElement {
   }
 
   clickObserver(clickEvent) {
-    console.log('I got a click', clickEvent)
     if (!this.vastPresented()) return
 
-    const element = clickEvent.target
-    console.log('... and vast was setup', clickEvent, element)
-
-    if (element) {
-      const height = element.clientHeight
-      console.log('maybe opening click through', height, clickEvent.offsetY)
+    if (clickEvent.target) {
+      const height = clickEvent.target.clientHeight
 
       if (clickEvent.offsetY <= height - 50 && this.isBeyondFirstFrame()) {
-        console.log('opening click through')
         this.vast.openClickthroughUrl()
       }
     }
@@ -154,7 +173,6 @@ export default class VideoElement {
   }
 
   isBeyondFirstFrame() {
-    console.log('checking video time', this.videoElement.currentTime)
     return this.videoElement.currentTime > 0
   }
 

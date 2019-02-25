@@ -44,9 +44,16 @@ context('Video Element Application', () => {
     cy.get('video').should('not.have.class', 'vast-playing')
   })
 
-  it('should remove classes after video plays', () => {
+  it('should remove vast video after vast video plays', () => {
     cy.visit('http://localhost:8080/index.html')
     cy.get('.vast-running')
     cy.get('.vast-playing')
+
+    cy.get('video').then($vid => {
+      const video = $vid[0]
+      video.currentTime = video.duration - 1
+    })
+    cy.wait(1000)
+    cy.get('video').find('source[src="http://clips.vorwaerts-gmbh.de/VfE_html5.mp4"]')
   })
 })
