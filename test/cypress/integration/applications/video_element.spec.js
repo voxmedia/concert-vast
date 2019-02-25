@@ -1,3 +1,5 @@
+const VIDEO_PAGE = 'http://localhost:8080/test/index.video.html'
+
 context('Video Element Application', () => {
   beforeEach(() => {
     cy.server()
@@ -6,12 +8,12 @@ context('Video Element Application', () => {
   })
 
   it('should have a video element on the page', () => {
-    cy.visit('http://localhost:8080/index.html')
+    cy.visit(VIDEO_PAGE)
     cy.get('video').should('have.class', 'vast-running')
   })
 
   it('should load an impression tracker on the page when playing', () => {
-    cy.visit('http://localhost:8080/index.html')
+    cy.visit(VIDEO_PAGE)
     cy.get('img').should('have.length', 0)
     cy.get('.vast-running')
     cy.get('.vast-playing')
@@ -19,7 +21,7 @@ context('Video Element Application', () => {
   })
 
   it('should run through all the quartiles when playing', () => {
-    cy.visit('http://localhost:8080/index.html')
+    cy.visit(VIDEO_PAGE)
     cy.get('img').should('have.length', 0)
     cy.get('.vast-running')
     cy.get('.vast-playing')
@@ -28,7 +30,7 @@ context('Video Element Application', () => {
   })
 
   it('should open a new window when clicked', () => {
-    cy.visit('http://localhost:8080/index.html', {
+    cy.visit(VIDEO_PAGE, {
       onBeforeLoad(win) {
         cy.stub(win, 'open')
           .as('windowOpen')
@@ -41,7 +43,7 @@ context('Video Element Application', () => {
   })
 
   it('should remove classes after video plays', () => {
-    cy.visit('http://localhost:8080/index.html')
+    cy.visit(VIDEO_PAGE)
     cy.get('.vast-running')
     cy.get('.vast-playing')
     cy.wait(1000)
@@ -51,7 +53,7 @@ context('Video Element Application', () => {
   })
 
   it('should remove vast video after vast video plays', () => {
-    cy.visit('http://localhost:8080/index.html')
+    cy.visit(VIDEO_PAGE)
     cy.get('.vast-running')
     cy.get('.vast-playing')
 
@@ -61,7 +63,7 @@ context('Video Element Application', () => {
   })
 
   it('should not open the clickthrough on click after vast video completes', () => {
-    cy.visit('http://localhost:8080/index.html', {
+    cy.visit(VIDEO_PAGE, {
       onBeforeLoad(win) {
         cy.stub(win, 'open')
           .as('windowOpen')
