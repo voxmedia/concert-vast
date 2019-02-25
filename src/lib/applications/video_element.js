@@ -82,8 +82,8 @@ export default class VideoElement {
 
   loadVastVideo() {
     const bestVideo = this.vast.bestVideo({
-      height: videoElement.clientHeight,
-      width: videoElement.clientWidth,
+      height: this.videoElement.clientHeight,
+      width: this.videoElement.clientWidth,
     })
     const videoSource = document.createElement('source')
 
