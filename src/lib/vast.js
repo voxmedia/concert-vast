@@ -57,15 +57,17 @@ export default class Vast {
   }
 
   addImpressionTrackingImagesFor(eventName, doc = document) {
-    return this.loadedElements['TrackingEvents'].addImpressionTrackingImagesFor(
-      eventName,
-      doc
-    )
+    return this.loadedElements['TrackingEvents'].addImpressionTrackingImagesFor(eventName, doc)
   }
 
   applyToVideoElementAsPreroll(videoElement) {
     const vea = new VideoElementApplication()
     vea.applyAsPreroll({ vast: this, videoElement: videoElement })
+  }
+
+  applyToVideoElement(videoElement) {
+    const vea = new VideoElementApplication()
+    vea.applyAsPrimary({ vast: this, videoElement: videoElement })
   }
 
   bestVideo(
@@ -90,10 +92,7 @@ export default class Vast {
   parse() {
     if (!this.vastDocument) {
       const parser = new DOMParser()
-      this.vastDocument = parser.parseFromString(
-        this.vastXml,
-        'application/xml'
-      )
+      this.vastDocument = parser.parseFromString(this.vastXml, 'application/xml')
       this.processAllElements()
     }
   }
@@ -110,8 +109,7 @@ export default class Vast {
 
         const downloadTime = endTime - startTime
         const downloadSize = request.responseText.length
-        this.bandwidthEstimateInKbs =
-          (downloadSize * 8) / (downloadTime / 1000) / 1024
+        this.bandwidthEstimateInKbs = (downloadSize * 8) / (downloadTime / 1000) / 1024
 
         this.vastXml = request.response
         this.vastDocument = null

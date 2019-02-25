@@ -37,7 +37,8 @@ export default class VideoElement {
   }
 
   applyAsPrimary({ vast, videoElement }) {
-    applyAsPreroll({ vast, videoElement })
+    this.applyAsPreroll({ vast, videoElement })
+    this.restoreVideoPlayer = false
   }
 
   // private
@@ -106,7 +107,6 @@ export default class VideoElement {
   }
 
   vastVideoEndedObserver() {
-    console.log('video is ended')
     if (!this.vastPresented()) return
     this.videoElement.classList.remove(VAST_PLAYING_CLASS)
 
