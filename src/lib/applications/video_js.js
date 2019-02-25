@@ -8,22 +8,22 @@ const EVENT_MAPPING = {
 const VIDEO_CONTROLS_HEIGHT = 50
 const VAST_LOADED_CLASS = 'vast-running'
 const VAST_PLAYING_CLASS = 'vast-playing'
-const VAST_DELAYED_ATTRIBUTE = 'vast-delayed-src'
 
-export default class VideoElement {
+export default class VideoJs {
   constructor() {
-    this.videoElement = null
+    this.videoJsPlayer = null
     this.vast = null
     this.previousVolume = 0
+    this.previousSources = []
     this._vastPresented = null
+    this.quartileSupport = new QuartileSupport()
     this.restoreVideoPlayer = false
   }
 
-  applyAsPreroll({ vast, videoElement }) {
+  applyAsPreroll({ vast, videoJsPlayer }) {
     this.vast = vast
-    this.videoElement = videoElement
-    this.previousVolume = this.videoElement.volume
-    this.quartileSupport = new QuartileSupport()
+    this.videoJsPlayer = videoJsPlayer
+    this.previousVolume = this.videoJsPlayer.volume()
     this._vastPresented = true
     this.restoreVideoPlayer = true
 
@@ -44,62 +44,58 @@ export default class VideoElement {
   // private
 
   pauseExistingVideoSources() {
-    Array.from(this.videoElement.querySelectorAll('source')).forEach(n => {
-      n.setAttribute(VAST_DELAYED_ATTRIBUTE, n.getAttribute('src'))
-      n.setAttribute('src', null)
-    })
+    this.previousSources = this.videoJsPlayer.src()
   }
 
   setupVideoEventListeners() {
-    // handle mute support
-    this.videoElement.addEventListener('volumechange', this.muteObserver.bind(this))
+    this.videoJsPlayer.on('volumechange', this.muteObserver.bind(this))
 
     for (const nativeEventName in EVENT_MAPPING) {
-      this.videoElement.addEventListener(nativeEventName, () => {
+      this.videoJsPlayer.on(nativeEventName, () => {
         if (!this.vastPresented()) return
         this.vast.addImpressionTrackingImagesFor(EVENT_MAPPING[nativeEventName])
       })
     }
 
-    this.videoElement.addEventListener('timeupdate', () => {
+    this.videoJsPlayer.on('timeupdate', () => {
       if (!this.vastPresented()) return
-      this.quartileSupport.setCurrentTime(this.videoElement.currentTime)
+      this.quartileSupport.setCurrentTime(this.videoJsPlayer.currentTime())
     })
 
-    this.videoElement.addEventListener('play', () => {
+    this.videoJsPlayer.on('play', () => {
       if (!this.vastPresented()) return
-      this.videoElement.classList.add(VAST_PLAYING_CLASS)
+      this.videoJsPlayer.addClass(VAST_PLAYING_CLASS)
     })
 
-    this.videoElement.addEventListener('ended', this.vastVideoEndedObserver.bind(this))
+    this.videoJsPlayer.on('ended', this.vastVideoEndedObserver.bind(this))
 
-    this.videoElement.addEventListener('click', this.clickObserver.bind(this))
-    this.videoElement.addEventListener('loadedmetadata', this.updateQuartileDuration.bind(this))
-    this.videoElement.addEventListener('durationchange', this.updateQuartileDuration.bind(this))
+    this.videoJsPlayer.off('click')
+    this.videoJsPlayer.on('click', this.clickObserver.bind(this))
+    this.videoJsPlayer.on('loadedmetadata', this.updateQuartileDuration.bind(this))
+    this.videoJsPlayer.on('durationchange', this.updateQuartileDuration.bind(this))
+    this.videoJsPlayer.on('enterFullWindow', this.fullscreenObserver.bind(this))
     document.addEventListener('fullscreenchange', this.fullscreenObserver.bind(this))
     document.addEventListener('webkitfullscreenchange', this.fullscreenObserver.bind(this))
   }
 
   loadVastVideo() {
     const bestVideo = this.vast.bestVideo({
-      height: videoElement.clientHeight,
-      width: videoElement.clientWidth,
+      height: this.videoJsPlayer.height(),
+      width: this.videoJsPlayer.width(),
     })
-    const videoSource = document.createElement('source')
 
-    videoSource.setAttribute('src', bestVideo.url())
-    videoSource.setAttribute('vast-added', true)
-    videoSource.setAttribute('type', bestVideo.mimeType())
-    this.videoElement.appendChild(videoSource)
-    this.videoElement.load()
+    this.videoJsPlayer.src({
+      type: bestVideo.mimeType(),
+      src: bestVideo.url(),
+    })
   }
 
   updateQuartileDuration() {
-    this.quartileSupport.setDuration(this.videoElement.duration)
+    this.quartileSupport.setDuration(this.videoJsPlayer.duration())
   }
 
   addClassToVideo() {
-    this.videoElement.classList.add(VAST_LOADED_CLASS)
+    this.videoJsPlayer.addClass(VAST_LOADED_CLASS)
   }
 
   setupImpressions() {
@@ -108,41 +104,30 @@ export default class VideoElement {
 
   vastVideoEndedObserver() {
     if (!this.vastPresented()) return
-    this.videoElement.classList.remove(VAST_PLAYING_CLASS)
+    this.videoJsPlayer.removeClass(VAST_PLAYING_CLASS)
 
     if (!this.restoreVideoPlayer) return
-    this.videoElement.classList.remove(VAST_LOADED_CLASS)
+    this.videoJsPlayer.removeClass(VAST_LOADED_CLASS)
 
     this._vastPresented = false
-
-    Array.from(this.videoElement.querySelectorAll('source[vast-added="true"]')).forEach(n => {
-      n.remove()
-    })
-
-    Array.from(this.videoElement.querySelectorAll('source')).forEach(n => {
-      n.setAttribute('src', n.getAttribute(VAST_DELAYED_ATTRIBUTE))
-      if (n.removeAttribute) {
-        n.removeAttribute(VAST_DELAYED_ATTRIBUTE)
-      }
-    })
-
-    this.videoElement.load()
+    console.log('reloading previous sources', this.previousSources)
+    this.videoJsPlayer.src(this.previousSources)
   }
 
   muteObserver() {
     if (!this.vastPresented()) return
 
-    if (this.previousVolume <= 0 && this.videoElement.volume != 0) {
+    if (this.previousVolume <= 0 && this.videoJsPlayer.volume() != 0) {
       this.vast.addImpressionTrackingImagesFor('unmute')
-    } else if ((this.previousVolume > 0 && this.videoElement.volume == 0) || this.videoElement.muted) {
+    } else if ((this.previousVolume > 0 && this.videoJsPlayer.volume() == 0) || this.videoJsPlayer.muted) {
       this.vast.addImpressionTrackingImagesFor('mute')
     }
-    this.previousVolume = this.videoElement.muted ? -1 : this.videoElement.volume
+    this.previousVolume = this.videoJsPlayer.muted() ? -1 : this.videoJsPlayer.volume()
   }
 
   playVideo() {
-    this.videoElement.addEventListener('canplay', () => {
-      this.videoElement.play()
+    this.videoJsPlayer.on('ready', () => {
+      this.videoJsPlayer.play()
     })
   }
 
@@ -160,6 +145,7 @@ export default class VideoElement {
 
   fullscreenObserver(fullscreenEvent) {
     if (!this.vastPresented()) return
+    console.log('going full screen', fullScreenEvent)
     if (document.fullscreenElement || document.webkitIsFullScreen) {
       this.vast.addImpressionTrackingImagesFor('fullscreen')
     }
@@ -173,7 +159,7 @@ export default class VideoElement {
   }
 
   isBeyondFirstFrame() {
-    return this.videoElement.currentTime > 0
+    return this.videoJsPlayer.currentTime() > 0
   }
 
   vastPresented() {

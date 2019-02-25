@@ -20,20 +20,22 @@ export default class VastElementBase {
 
     const selector = this.constructor.selector()
 
-    this.elements = Array.from(
-      this.vast.vastDocument.querySelectorAll(selector)
-    )
+    this.elements = Array.from(this.vast.vastDocument.querySelectorAll(selector))
     this.onVastReady()
   }
 
-  addImpressionUrl(url, { doc } = { doc: document }) {
+  addImpressionUrl(url, { doc, name } = { doc: document, name: '' }) {
     const impressionImage = doc.createElement('img')
     impressionImage.style.height = 1
     impressionImage.style.width = 1
     impressionImage.style.top = 0
     impressionImage.style.left = 0
     impressionImage.style.visibility = 'hidden'
+    impressionImage.className = 'vast-pixel'
     impressionImage.src = url
+    if (name) {
+      impressionImage.setAttribute('data-for', name)
+    }
     doc.body.appendChild(impressionImage)
   }
 }

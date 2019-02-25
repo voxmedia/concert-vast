@@ -21,7 +21,7 @@ export default class TrackingEvents extends VastElementBase {
 
   addImpressionTrackingImagesFor(eventName, doc = document) {
     this.trackingUrlsFor(eventName).forEach(url => {
-      this.addImpressionUrl(url, { doc: doc })
+      this.addImpressionUrl(url, { doc: doc, name: eventName })
     })
   }
 }

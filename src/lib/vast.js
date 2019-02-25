@@ -4,7 +4,9 @@ import Impression from './vast_elements/impression'
 import ErrorImpression from './vast_elements/error_impression'
 import TrackingEvents from './vast_elements/tracking_events'
 import StreamChooser from './stream_chooser'
+
 import VideoElementApplication from './applications/video_element'
+import VideoJsApplication from './applications/video_js'
 
 export class VastXMLParsingError extends Error {}
 export class VastNetworkError extends Error {}
@@ -87,6 +89,11 @@ export default class Vast {
   applyToVideoElement(videoElement) {
     const vea = new VideoElementApplication()
     vea.applyAsPrimary({ vast: this, videoElement: videoElement })
+  }
+
+  applyToVideoJsAsPreroll(videoJsPlayer) {
+    const vja = new VideoJsApplication()
+    vja.applyAsPreroll({ vast: this, videoJsPlayer: videoJsPlayer })
   }
 
   bestVideo(
