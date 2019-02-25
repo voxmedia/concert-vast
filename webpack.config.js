@@ -1,5 +1,5 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 // const CleanWebpackPlugin = require('clean-webpack-plugin');
 // const CopyWebpackPlugin = require('copy-webpack-plugin');
 // const webpack = require('webpack');
@@ -12,22 +12,26 @@ module.exports = {
     filename: 'concert-vast.js',
     library: 'ConcertVast',
     libraryExport: 'default',
-    libraryTarget: 'umd' //browser or module bundler or the circus
+    libraryTarget: 'umd', //browser or module bundler or the circus
   },
   module: {
     rules: [
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: 'babel-loader'
-      }
-    ]
+        loader: 'babel-loader',
+      },
+    ],
   },
   plugins: [
     new HtmlWebpackPlugin({
       inject: 'head',
-      template: 'index.html'
+      template: 'index.html',
     }),
   ],
-  mode: 'development'
-};
+  mode: 'development',
+  devServer: {
+    hot: false,
+    inline: false,
+  },
+}

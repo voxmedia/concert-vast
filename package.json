@@ -8,7 +8,8 @@
   "private": false,
   "scripts": {
     "test": "jest",
-    "cypress": "cypress open",
+    "cypress": "cypress run",
+    "cypress-open": "cypress open",
     "build": "webpack",
     "dev": "webpack-dev-server"
   },

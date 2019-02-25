@@ -6,6 +6,8 @@ const EVENT_MAPPING = {
 }
 
 const VIDEO_CONTROLS_HEIGHT = 50
+const VAST_LOADED_CLASS = 'vast-running'
+const VAST_PLAYING_CLASS = 'vast-playing'
 
 export default class VideoElement {
   constructor() {
@@ -22,11 +24,13 @@ export default class VideoElement {
     this.quartileSupport = new QuartileSupport()
     this._vastPresented = true
 
+    this.addClassToVideo()
     this.pauseExistingVideoSources()
     this.setupQuartileSupport()
     this.setupVideoEventListeners()
     this.setupImpressions()
     this.loadVastVideo()
+    this.playVideo()
   }
 
   applyAsPrimary({ vast, videoElement }) {
@@ -58,6 +62,9 @@ export default class VideoElement {
       this.quartileSupport.setCurrentTime(this.videoElement.currentTime)
     })
 
+    this.videoElement.addEventListener('play', () => {
+      this.videoElement.classList.add(VAST_PLAYING_CLASS)
+    })
     this.videoElement.addEventListener('click', this.clickObserver.bind(this))
     this.videoElement.addEventListener('loadedmetadata', this.updateQuartileDuration.bind(this))
     this.videoElement.addEventListener('durationchange', this.updateQuartileDuration.bind(this))
@@ -82,6 +89,10 @@ export default class VideoElement {
     this.quartileSupport.setDuration(this.videoElement.duration)
   }
 
+  addClassToVideo() {
+    this.videoElement.classList.add(VAST_LOADED_CLASS)
+  }
+
   setupImpressions() {
     this.vast.addImpressionUrls()
   }
@@ -97,13 +108,25 @@ export default class VideoElement {
     this.previousVolume = this.videoElement.muted ? -1 : this.videoElement.volume
   }
 
+  playVideo() {
+    this.videoElement.addEventListener('canplay', () => {
+      this.videoElement.play()
+    })
+  }
+
   clickObserver(clickEvent) {
+    console.log('I got a click', clickEvent)
     if (!this.vastPresented()) return
 
     const element = clickEvent.target
+    console.log('... and vast was setup', clickEvent, element)
+
     if (element) {
       const height = element.clientHeight
+      console.log('maybe opening click through', height, clickEvent.offsetY)
+
       if (clickEvent.offsetY <= height - 50 && this.isBeyondFirstFrame()) {
+        console.log('opening click through')
         this.vast.openClickthroughUrl()
       }
     }
@@ -124,6 +147,7 @@ export default class VideoElement {
   }
 
   isBeyondFirstFrame() {
+    console.log('checking video time', this.videoElement.currentTime)
     return this.videoElement.currentTime > 0
   }
 
