@@ -9,6 +9,12 @@ context('VideoJs as Preroll Application', () => {
     cy.server()
     cy.fixture('vast.xml').as('vastXML')
     cy.route('GET', 'https://ad.doubleclick.net/ddm/*', '@vastXML')
+
+    cy.fixture('vendor/video-js.js').as('videoJSjs')
+    cy.route('GET', 'https://vjs.zencdn.net/*/video.js', '@videoJSjs')
+
+    cy.fixture('vendor/video-js.css').as('videoJScss')
+    cy.route('GET', 'https://vjs.zencdn.net/*/video-js.css', '@videoJScss')
   })
 
   it('should have a video element on the page', () => {
