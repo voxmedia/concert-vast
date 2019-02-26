@@ -25,7 +25,7 @@ context('Video Element as Primary Application', () => {
     cy.get('img').should('have.length', 0)
     cy.get('.vast-running')
     cy.get('.vast-playing')
-    fastForwardVideo(cy)
+    cy.fastForwardVideo({ fromEnd: 0.5 })
     cy.wait(500)
     cy.get('img').should('have.length', 8)
   })
@@ -49,7 +49,7 @@ context('Video Element as Primary Application', () => {
     cy.get('.vast-playing')
     cy.wait(1000)
     // fast forward the video and make sure the class is not set
-    fastForwardVideo(cy)
+    cy.fastForwardVideo({ fromEnd: 0.5 })
     cy.get('video').should('not.have.class', 'vast-playing')
   })
 
@@ -58,7 +58,7 @@ context('Video Element as Primary Application', () => {
     cy.get('.vast-running')
     cy.get('.vast-playing')
 
-    fastForwardVideo(cy)
+    cy.fastForwardVideo({ fromEnd: 0.5 })
     cy.wait(1000)
     cy.get('video source[src="http://clips.vorwaerts-gmbh.de/VfE_html5.mp4"]').should('have.length', 0)
   })
@@ -72,16 +72,9 @@ context('Video Element as Primary Application', () => {
       },
     })
     cy.get('.vast-playing')
-    fastForwardVideo(cy)
+    cy.fastForwardVideo({ fromEnd: 0.5 })
     cy.wait(3000)
     cy.get('video').click()
     cy.get('@windowOpen').should('be.called')
   })
 })
-
-function fastForwardVideo(cy) {
-  cy.get('video').then($vid => {
-    const video = $vid[0]
-    video.currentTime = video.duration - 1
-  })
-}
