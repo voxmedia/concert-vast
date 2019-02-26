@@ -4,7 +4,7 @@
   "description": "Simple Vast Parsing for Concert Video Ads",
   "main": "index.js",
   "author": "Vox Media",
-  "license": "BSD 3-Clause \"New\" or \"Revised\" License",
+  "license": "Apache-2.0",
   "private": false,
   "scripts": {
     "test": "jest",
