@@ -11,19 +11,16 @@ const VAST_PLAYING_CLASS = 'vast-playing'
 const VAST_DELAYED_ATTRIBUTE = 'vast-delayed-src'
 
 export default class VideoElement {
-  constructor() {
-    this.videoElement = null
-    this.vast = null
-    this.previousVolume = 0
-    this._vastPresented = null
-    this.restoreVideoPlayer = false
-  }
-
-  applyAsPreroll({ vast, videoElement }) {
+  constructor({ vast, videoElement }) {
     this.vast = vast
     this.videoElement = videoElement
     this.previousVolume = this.videoElement.volume
     this.quartileSupport = new QuartileSupport()
+    this._vastPresented = null
+    this.restoreVideoPlayer = false
+  }
+
+  applyAsPreroll() {
     this._vastPresented = true
     this.restoreVideoPlayer = true
 
@@ -36,8 +33,8 @@ export default class VideoElement {
     this.playVideo()
   }
 
-  applyAsPrimary({ vast, videoElement }) {
-    this.applyAsPreroll({ vast, videoElement })
+  applyAsPrimary() {
+    this.applyAsPreroll()
     this.restoreVideoPlayer = false
   }
 
@@ -82,8 +79,8 @@ export default class VideoElement {
 
   loadVastVideo() {
     const bestVideo = this.vast.bestVideo({
-      height: videoElement.clientHeight,
-      width: videoElement.clientWidth,
+      height: this.videoElement.clientHeight,
+      width: this.videoElement.clientWidth,
     })
     const videoSource = document.createElement('source')
 

@@ -10,20 +10,17 @@ const VAST_LOADED_CLASS = 'vast-running'
 const VAST_PLAYING_CLASS = 'vast-playing'
 
 export default class VideoJs {
-  constructor() {
-    this.videoJsPlayer = null
-    this.vast = null
-    this.previousVolume = 0
+  constructor({ vast, videoJsPlayer }) {
+    this.vast = vast
+    this.videoJsPlayer = videoJsPlayer
+    this.previousVolume = this.videoJsPlayer.volume()
     this.previousSources = []
     this._vastPresented = null
     this.quartileSupport = new QuartileSupport()
     this.restoreVideoPlayer = false
   }
 
-  applyAsPreroll({ vast, videoJsPlayer }) {
-    this.vast = vast
-    this.videoJsPlayer = videoJsPlayer
-    this.previousVolume = this.videoJsPlayer.volume()
+  applyAsPreroll() {
     this._vastPresented = true
     this.restoreVideoPlayer = true
 

@@ -23,3 +23,10 @@
 //
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('fastForwardVideo', (options = { fromEnd: 0.5 }) => {
+  cy.get('video').then($vid => {
+    const video = $vid[0]
+    video.currentTime = video.duration - options.fromEnd
+  })
+})
