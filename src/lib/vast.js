@@ -96,6 +96,11 @@ export default class Vast {
     vja.applyAsPreroll()
   }
 
+  applyToVideoJs(videoJsPlayer) {
+    const vja = new VideoJsApplication({ vast: this, videoJsPlayer: videoJsPlayer })
+    vja.applyAsPrimary()
+  }
+
   bestVideo(
     { width, height, bandwidth, mimeTypes } = {
       width: 800,

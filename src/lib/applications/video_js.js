@@ -30,11 +30,11 @@ export default class VideoJs {
     this.setupVideoEventListeners()
     this.setupImpressions()
     this.loadVastVideo()
-    this.playVideo()
+    this.autoPlayVideo()
   }
 
-  applyAsPrimary({ vast, videoElement }) {
-    this.applyAsPreroll({ vast, videoElement })
+  applyAsPrimary() {
+    this.applyAsPreroll()
     this.restoreVideoPlayer = false
   }
 
@@ -122,9 +122,17 @@ export default class VideoJs {
     this.previousVolume = this.videoJsPlayer.muted() ? -1 : this.videoJsPlayer.volume()
   }
 
-  playVideo() {
-    this.videoJsPlayer.on('ready', () => {
-      this.videoJsPlayer.play()
+  autoPlayVideo() {
+    this.videoJsPlayer.ready(() => {
+      this.videoJsPlayer
+        .play()
+        .then(() => {})
+        .catch(e => {
+          if (!this.videoJsPlayer.muted()) {
+            this.videoJsPlayer.muted(true)
+            this.autoPlayVideo()
+          }
+        })
     })
   }
 
@@ -140,12 +148,10 @@ export default class VideoJs {
     }
   }
 
-  fullscreenObserver(fullscreenEvent) {
+  fullscreenObserver(fullscreenEvent = null) {
     if (!this.vastPresented()) return
-    console.log('going full screen', fullScreenEvent)
-    if (document.fullscreenElement || document.webkitIsFullScreen) {
-      this.vast.addImpressionTrackingImagesFor('fullscreen')
-    }
+
+    this.vast.addImpressionTrackingImagesFor('fullscreen')
   }
 
   setupQuartileSupport() {

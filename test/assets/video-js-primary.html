@@ -2,6 +2,11 @@
   <head>
     <link href="https://vjs.zencdn.net/7.4.1/video-js.css" rel="stylesheet" />
     <title>Test for ConcertVast on Video JS</title>
+    <style>
+      video {
+        width: 100%;
+      }
+    </style>
   </head>
   <body>
     <video controls class="video-js">
@@ -21,7 +26,7 @@
     var url =
       'https://ad.doubleclick.net/ddm/pfadx/N3493.3018656VOX-CONCERT/B22204404.238409492;sz=0x0;ord=%5Btimestamp%5D;dc_lat=;dc_rdid=;tag_for_child_directed_treatment=;tfua=;dcmt=text/xml;dc_vast=3'
     v.loadRemoteVast(url).then(e => {
-      v.applyToVideoJsAsPreroll(vjs)
+      v.applyToVideoJs(vjs)
     })
   </script>
 </html>
