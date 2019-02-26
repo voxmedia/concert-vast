@@ -9,9 +9,7 @@ describe('External error handling', () => {
 
   it('should support return the error pixel urls', () => {
     expect(typeof vast.errorImpressionUrls).toBe('function')
-    expect(vast.errorImpressionUrls()[0]).toMatch(
-      /^https:\/\/ade\.googlesyndication/
-    )
+    expect(vast.errorImpressionUrls()[0]).toMatch(/^https:\/\/ade\.googlesyndication/)
     expect(vast.errorImpressionUrls().length).toBe(1)
   })
 

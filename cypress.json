@@ -1,0 +1,12 @@
+{
+  "fixturesFolder": "test/fixtures",
+  "integrationFolder": "test/cypress/integration",
+  "pluginsFile": "test/cypress/plugins/index.js",
+  "screenshotsFolder": "test/cypress/screenshots",
+  "supportFile": "test/cypress/support/index.js",
+  "videosFolder": "test/cypress/videos",
+  "port": 8079,
+  "video": false,
+  "headed": true,
+  "chromeWebSecurity": false
+}

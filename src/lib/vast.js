@@ -4,6 +4,7 @@ import Impression from './vast_elements/impression'
 import ErrorImpression from './vast_elements/error_impression'
 import TrackingEvents from './vast_elements/tracking_events'
 import StreamChooser from './stream_chooser'
+import VideoElementApplication from './applications/video_element'
 
 export class VastXMLParsingError extends Error {}
 export class VastNetworkError extends Error {}
@@ -50,6 +51,10 @@ export default class Vast {
     return this.loadedElements['Clickthrough'].clickthroughUrl()
   }
 
+  openClickthroughUrl() {
+    return this.loadedElements['Clickthrough'].openClickthroughUrl()
+  }
+
   impressionUrls() {
     return this.loadedElements['Impression'].impressionUrls()
   }
@@ -71,10 +76,17 @@ export default class Vast {
   }
 
   addImpressionTrackingImagesFor(eventName, doc = document) {
-    return this.loadedElements['TrackingEvents'].addImpressionTrackingImagesFor(
-      eventName,
-      doc
-    )
+    return this.loadedElements['TrackingEvents'].addImpressionTrackingImagesFor(eventName, doc)
+  }
+
+  applyToVideoElementAsPreroll(videoElement) {
+    const vea = new VideoElementApplication({ vast: this, videoElement: videoElement })
+    vea.applyAsPreroll()
+  }
+
+  applyToVideoElement(videoElement) {
+    const vea = new VideoElementApplication({ vast: this, videoElement: videoElement })
+    vea.applyAsPrimary()
   }
 
   bestVideo(
@@ -99,14 +111,9 @@ export default class Vast {
   parse() {
     if (!this.vastDocument) {
       const parser = new DOMParser()
-      this.vastDocument = parser.parseFromString(
-        this.vastXml,
-        'application/xml'
-      )
+      this.vastDocument = parser.parseFromString(this.vastXml, 'application/xml')
       if (this.vastDocument.documentElement.nodeName == 'parsererror') {
-        throw new VastXMLParsingError(
-          `Error parsing ${this.vastXml}. Not valid XML`
-        )
+        throw new VastXMLParsingError(`Error parsing ${this.vastXml}. Not valid XML`)
       }
       this.processAllElements()
     }
@@ -122,21 +129,14 @@ export default class Vast {
       request.addEventListener('load', e => {
         const downloadTime = new Date().getTime() - startTime
         const downloadSize = request.responseText.length
-        this.bandwidthEstimateInKbs =
-          (downloadSize * 8) / (downloadTime / 1000) / 1024
+        this.bandwidthEstimateInKbs = (downloadSize * 8) / (downloadTime / 1000) / 1024
 
         this.useXmlString(request.response)
         resolve()
       })
 
       request.addEventListener('error', e => {
-        reject(
-          new VastNetworkError(
-            `Network Error: Request status: ${request.status}, ${
-              request.responseText
-            }`
-          )
-        )
+        reject(new VastNetworkError(`Network Error: Request status: ${request.status}, ${request.responseText}`))
       })
 
       request.addEventListener('abort', e => {
@@ -144,13 +144,8 @@ export default class Vast {
       })
 
       request.addEventListener('timeout', e => {
-        reject(
-          new VastNetworkError(
-            `Network Timeout: Request did not complete in ${timeout}ms`
-          )
-        )
+        reject(new VastNetworkError(`Network Timeout: Request did not complete in ${timeout}ms`))
       })
-
       startTime = new Date().getTime()
       request.open('GET', this.vastUrl)
       request.send()

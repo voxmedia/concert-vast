@@ -15,9 +15,12 @@
   <body>
     <input
       name="vastUrl"
-      value="https://ad.doubleclick.net/ddm/pfadx/N3493.3018656VOX-CONCERT/B22204404.238409492;sz=0x0;ord=[timestamp];dc_lat=;dc_rdid=;tag_for_child_directed_treatment=;tfua=;dcmt=text/xml;dc_vast=3"
+      value="https://ad.doubleclick.net/ddm/pfadx/N3493.3018656VOX-CONCERT/B22204404.238409492;sz=0x0;ord=%5Btimestamp%5D;dc_lat=;dc_rdid=;tag_for_child_directed_treatment=;tfua=;dcmt=text/xml;dc_vast=3"
     />
-    <video controls></video>
+    <video controls>
+      <source src="http://clips.vorwaerts-gmbh.de/VfE_html5.mp4" type="video/mp4" />
+      <source src="http://clips.vorwaerts-gmbh.de/VfE.webm" type="video/webm" />
+    </video>
   </body>
   <script>
     var videoElement = document.querySelector('video')
@@ -32,12 +35,7 @@
             height: videoElement.clientHeight,
             width: videoElement.clientWidth,
           })
-          console.log(
-            'best video',
-            bestVideo.url(),
-            bestVideo.mimeType(),
-            bestVideo.bitrate()
-          )
+          console.log('best video', bestVideo.url(), bestVideo.mimeType(), bestVideo.bitrate())
 
           Array.from(videoElement.querySelectorAll('source')).forEach(s => {
             s.remove()
@@ -52,6 +50,7 @@
           console.log("Can't load video, you got yourself an error", error)
         })
     }
+
     loadVast(urlElement.value)
 
     urlElement.addEventListener('blur', e => {

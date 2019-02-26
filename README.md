@@ -4,6 +4,31 @@ This is the Concert Vast Parser. It consumes simple inline video VAST tags and p
 
 ### Using this library
 
+The Vast Libary offers high and low level interacition with the Vast format. The following example is the simplest case to implement preroll on a `<video>` element.
+
+```html
+<video controls>
+  <source src="YOUR GREAT VIDEO URL HERE" type="video/mp4" />
+</video>
+<script>
+  const videoElement = document.querySelector('video')
+  const vast = new ConcertVast()
+  vast.loadRemoteVast('VAST URL HERE').then(e => {
+    vast.applyToVideoElementAsPreroll(videoElement)
+  })
+</script>
+```
+
+It's also possible you don't want the preroll behavior, and you can use:
+
+```js
+vast.applyToVideoElement(videoElement)
+```
+
+#### Doing it on your own
+
+Here is a sample of the public API that is exposed in the ConcertVast Library _(more documentation coming)_
+
 ```js
 // Find the video element on the page
 const videoElement = document.querySelector('video')
@@ -51,12 +76,17 @@ const player = videoJs(videoElement)
 player.src([{ type: bestVastVideo.mimeType(), src: bestVastVideo.url() }])
 ```
 
+### Documented Functionality
+
 ### Clone it and Run it
 
 - Clone this repo
 - Run `yarn install`
-- Run `yarn test` to run Jest in watch mode.
-- Run `yarn build` to update `dist/index.html` to see it in action.
+- Run `yarn test --watch` to run Jest in watch mode.
+- Run `yarn dev` to run webpack in dev mode http://localhost:8080 (live reloading is disabled)
+- Run `yarn cypress` to run headless end to end integration testing with cypress. Expects the `yarn dev` server to be running.
+- Run `yarn cypress-open` to run cypress in visual mode
+- Run `yarn build` to build the final js
 
 ### Remaining Work
 
@@ -75,4 +105,4 @@ player.src([{ type: bestVastVideo.mimeType(), src: bestVastVideo.url() }])
 
 - es6
 - no semicolons _(come at me)_
-- Strict TDD via [Jest](https://jestjs.io/)
+- Strict BDD via [Jest](https://jestjs.io/)
