@@ -11,18 +11,18 @@ The Vast Libary offers high and low level interacition with the Vast format. The
   <source src="YOUR GREAT VIDEO URL HERE" type="video/mp4" />
 </video>
 <script>
-  const videoElement = document.querySelector('video')
-  const vast = new ConcertVast()
+  const videoElement = document.querySelector('video');
+  const vast = new ConcertVast();
   vast.loadRemoteVast('VAST URL HERE').then(e => {
-    vast.applyToVideoElementAsPreroll(videoElement)
-  })
+    vast.applyToVideoElementAsPreroll(videoElement);
+  });
 </script>
 ```
 
 It's also possible you don't want the preroll behavior, and you can use:
 
 ```js
-vast.applyToVideoElement(videoElement)
+vast.applyToVideoElement(videoElement);
 ```
 
 #### Doing it on your own
@@ -31,10 +31,10 @@ Here is a sample of the public API that is exposed in the ConcertVast Library _(
 
 ```js
 // Find the video element on the page
-const videoElement = document.querySelector('video')
+const videoElement = document.querySelector('video');
 
 // Instantiate a new ConcertVast object
-const cv = new ConcertVast()
+const cv = new ConcertVast();
 
 // Load the VAST URL, this is async so you can use
 // await or .then() to delay execution until the vast
@@ -43,7 +43,7 @@ const cv = new ConcertVast()
 // Optionally a timeout parameter (in ms) can be passed in to specify
 // how long to wait for a vast response
 try {
-  await cv.loadRemoteVast(url, { timeout: 10000 })
+  await cv.loadRemoteVast(url, { timeout: 10000 });
 } catch (error) {
   // if this raises an error, it is for the following reasons:
   // - there was a network error (VastNetworkError)
@@ -58,22 +58,22 @@ try {
 const bestVastVideo = cv.bestVideo({
   height: videoElement.clientHeight,
   width: videoElement.clientWidth,
-})
+});
 
 // When using vanilla video element
 Array.from(videoElement.querySelectorAll('source')).forEach(s => {
-  s.remove()
-})
-const vidSource = document.createElement('source')
-vidSource.setAttribute('src', bestVastVideo.url())
-vidSource.setAttribute('type', bestVastVideo.mimeType())
-videoElement.appendChild(vidSource)
+  s.remove();
+});
+const vidSource = document.createElement('source');
+vidSource.setAttribute('src', bestVastVideo.url());
+vidSource.setAttribute('type', bestVastVideo.mimeType());
+videoElement.appendChild(vidSource);
 // Need to call load if you change the video source
-videoElement.load()
+videoElement.load();
 
 // Or if using videojs
-const player = videoJs(videoElement)
-player.src([{ type: bestVastVideo.mimeType(), src: bestVastVideo.url() }])
+const player = videoJs(videoElement);
+player.src([{ type: bestVastVideo.mimeType(), src: bestVastVideo.url() }]);
 ```
 
 ### Documented Functionality
@@ -104,5 +104,20 @@ player.src([{ type: bestVastVideo.mimeType(), src: bestVastVideo.url() }])
 ### Important details:
 
 - es6
-- no semicolons _(come at me)_
 - Strict BDD via [Jest](https://jestjs.io/)
+
+### License
+
+Copyright 2019 Vox Media
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
