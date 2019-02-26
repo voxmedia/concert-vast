@@ -1,11 +1,11 @@
-import Impression from './impression'
+import Impression from './impression';
 
 export default class ErrorImpression extends Impression {
   setup() {
-    this._impressionUrls = []
+    this._impressionUrls = [];
   }
 
   static selector() {
-    return 'Ad Error'
+    return 'Ad Error';
   }
 }
