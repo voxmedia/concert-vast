@@ -87,18 +87,18 @@ export default class Vast {
   }
 
   applyToVideoElement(videoElement) {
-    const vea = new VideoElementApplication({ vast: this, videoElement: videoElement })
-    vea.applyAsPrimary()
+    const videoElApplication = new VideoElementApplication({ vast: this, videoElement: videoElement })
+    videoElApplication.applyAsPrimary()
   }
 
   applyToVideoJsAsPreroll(videoJsPlayer) {
-    const vja = new VideoJsApplication({ vast: this, videoJsPlayer: videoJsPlayer })
-    vja.applyAsPreroll()
+    const videoJsApplication = new VideoJsApplication({ vast: this, videoJsPlayer: videoJsPlayer })
+    videoJsApplication.applyAsPreroll()
   }
 
   applyToVideoJs(videoJsPlayer) {
-    const vja = new VideoJsApplication({ vast: this, videoJsPlayer: videoJsPlayer })
-    vja.applyAsPrimary()
+    const videoJsApplication = new VideoJsApplication({ vast: this, videoJsPlayer: videoJsPlayer })
+    videoJsApplication.applyAsPrimary()
   }
 
   bestVideo(
