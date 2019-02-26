@@ -2,19 +2,11 @@ const VIDEO_PAGE = 'http://localhost:8080/test/video-js-preroll.html'
 const TOP_LEVEL_VIDEO_JS_SELECTOR = '.video-js'
 const IMPRESSION_SELECTOR = 'img.vast-pixel'
 
-import { fastForwardVideo } from '../integration_helpers'
-
 context('VideoJs as Preroll Application', () => {
   beforeEach(() => {
     cy.server()
     cy.fixture('vast.xml').as('vastXML')
     cy.route('GET', 'https://ad.doubleclick.net/ddm/*', '@vastXML')
-
-    cy.fixture('vendor/video-js.js').as('videoJSjs')
-    cy.route('GET', 'https://vjs.zencdn.net/*/video.js', '@videoJSjs')
-
-    cy.fixture('vendor/video-js.css').as('videoJScss')
-    cy.route('GET', 'https://vjs.zencdn.net/*/video-js.css', '@videoJScss')
   })
 
   it('should have a video element on the page', () => {
@@ -35,7 +27,7 @@ context('VideoJs as Preroll Application', () => {
     cy.get(IMPRESSION_SELECTOR).should('have.length', 0)
     cy.get('.vast-running')
     cy.get('.vast-playing')
-    fastForwardVideo(cy)
+    cy.fastForwardVideo({ fromEnd: 0.5 })
     cy.wait(500)
     cy.get(IMPRESSION_SELECTOR).should('have.length', 8)
   })
@@ -58,8 +50,7 @@ context('VideoJs as Preroll Application', () => {
     cy.get('.vast-running')
     cy.get('.vast-playing')
     cy.wait(1000)
-    // fast forward the video and make sure the class is not set
-    fastForwardVideo(cy)
+    cy.fastForwardVideo({ fromEnd: 0.5 })
     cy.get(TOP_LEVEL_VIDEO_JS_SELECTOR).should('not.have.class', 'vast-playing')
   })
 
@@ -68,7 +59,7 @@ context('VideoJs as Preroll Application', () => {
     cy.get('.vast-running')
     cy.get('.vast-playing')
 
-    fastForwardVideo(cy)
+    cy.fastForwardVideo({ fromEnd: 0.5 })
     cy.wait(1000)
     cy.get('video').find('source[src="http://clips.vorwaerts-gmbh.de/VfE_html5.mp4"]')
   })
@@ -82,7 +73,7 @@ context('VideoJs as Preroll Application', () => {
       },
     })
     cy.get('.vast-playing')
-    fastForwardVideo(cy)
+    cy.fastForwardVideo({ fromEnd: 0.5 })
     cy.wait(3000)
     cy.get(TOP_LEVEL_VIDEO_JS_SELECTOR).click()
     cy.get('@windowOpen').should('not.be.called')

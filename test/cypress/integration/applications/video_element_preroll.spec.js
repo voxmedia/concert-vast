@@ -48,7 +48,6 @@ context('Video Element as Preroll Application', () => {
     cy.get('.vast-running')
     cy.get('.vast-playing')
     cy.wait(1000)
-    // fast forward the video and make sure the class is not set
     cy.fastForwardVideo({ fromEnd: 0.5 })
     cy.get('video').should('not.have.class', 'vast-playing')
   })
