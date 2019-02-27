@@ -21,7 +21,7 @@ export default class Impression extends VastElementBase {
 
   addImpressionUrls(doc = document) {
     this.impressionUrls().forEach(url => {
-      this.addImpressionUrl(url, { doc: doc })
+      this.addImpressionUrl(url, { doc: doc, name: 'impression' })
     })
   }
 }

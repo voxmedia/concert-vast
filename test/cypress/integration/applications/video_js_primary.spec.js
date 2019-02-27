@@ -1,6 +1,8 @@
-const VIDEO_PAGE = 'http://localhost:8080/test/index.video-preroll.html'
+const VIDEO_PAGE = 'http://localhost:8080/test/video-js-primary.html'
+const TOP_LEVEL_VIDEO_JS_SELECTOR = '.video-js'
+const IMPRESSION_SELECTOR = 'img.vast-pixel'
 
-context('Video Element as Preroll Application', () => {
+context('Video Element as Primary Application', () => {
   beforeEach(() => {
     cy.server()
     cy.fixture('vast.xml').as('vastXML')
@@ -9,25 +11,21 @@ context('Video Element as Preroll Application', () => {
 
   it('should have a video element on the page', () => {
     cy.visit(VIDEO_PAGE)
-    cy.get('video').should('have.class', 'vast-running')
+    cy.get(TOP_LEVEL_VIDEO_JS_SELECTOR).should('have.class', 'vast-running')
   })
 
   it('should load an impression tracker on the page when playing', () => {
     cy.visit(VIDEO_PAGE)
-    cy.get('img').should('have.length', 0)
     cy.get('.vast-running')
-    cy.get('.vast-playing')
-    cy.get('img').should('have.length', 2)
+    cy.get(IMPRESSION_SELECTOR).should('have.length', 2)
   })
 
   it('should run through all the quartiles when playing', () => {
     cy.visit(VIDEO_PAGE)
-    cy.get('img').should('have.length', 0)
     cy.get('.vast-running')
-    cy.get('.vast-playing')
     cy.fastForwardVideo({ fromEnd: 0.5 })
     cy.wait(500)
-    cy.get('img').should('have.length', 8)
+    cy.get(IMPRESSION_SELECTOR).should('have.length', 8)
   })
 
   it('should open a new window when clicked', () => {
@@ -49,20 +47,20 @@ context('Video Element as Preroll Application', () => {
     cy.get('.vast-playing')
     cy.wait(1000)
     cy.fastForwardVideo({ fromEnd: 0.5 })
-    cy.get('video').should('not.have.class', 'vast-playing')
+    cy.get(TOP_LEVEL_VIDEO_JS_SELECTOR).should('not.have.class', 'vast-playing')
   })
 
-  it('should remove vast video after vast video plays', () => {
+  it('should not remove vast video after vast video plays', () => {
     cy.visit(VIDEO_PAGE)
     cy.get('.vast-running')
     cy.get('.vast-playing')
 
     cy.fastForwardVideo({ fromEnd: 0.5 })
     cy.wait(1000)
-    cy.get('video').find('source[src="http://clips.vorwaerts-gmbh.de/VfE_html5.mp4"]')
+    cy.get('video[src*="videoplayback"]').should('have.length', 1)
   })
 
-  it('should not open the clickthrough on click after vast video completes', () => {
+  it('should still open the clickthrough on click after vast video completes', () => {
     cy.visit(VIDEO_PAGE, {
       onBeforeLoad(win) {
         cy.stub(win, 'open')
@@ -73,7 +71,7 @@ context('Video Element as Preroll Application', () => {
     cy.get('.vast-playing')
     cy.fastForwardVideo({ fromEnd: 0.5 })
     cy.wait(3000)
-    cy.get('video').click()
-    cy.get('@windowOpen').should('not.be.called')
+    cy.get(TOP_LEVEL_VIDEO_JS_SELECTOR).click()
+    cy.get('@windowOpen').should('be.called')
   })
 })
