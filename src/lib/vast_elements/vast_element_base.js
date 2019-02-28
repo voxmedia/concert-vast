@@ -1,8 +1,8 @@
 export default class VastElementBase {
   constructor(vastBase) {
-    this.vast = vastBase
-    this.setup()
-    this.elements = []
+    this.vast = vastBase;
+    this.setup();
+    this.elements = [];
   }
 
   // Selector to determine applicable vast elements
@@ -16,26 +16,26 @@ export default class VastElementBase {
 
   // ----
   process() {
-    if (!this.vast.vastDocument) return
+    if (!this.vast.vastDocument) return;
 
-    const selector = this.constructor.selector()
+    const selector = this.constructor.selector();
 
-    this.elements = Array.from(this.vast.vastDocument.querySelectorAll(selector))
-    this.onVastReady()
+    this.elements = Array.from(this.vast.vastDocument.querySelectorAll(selector));
+    this.onVastReady();
   }
 
   addImpressionUrl(url, { doc, name } = { doc: document, name: '' }) {
-    const impressionImage = doc.createElement('img')
-    impressionImage.style.height = 1
-    impressionImage.style.width = 1
-    impressionImage.style.top = 0
-    impressionImage.style.left = 0
-    impressionImage.style.visibility = 'hidden'
-    impressionImage.className = 'vast-pixel'
-    impressionImage.src = url
+    const impressionImage = doc.createElement('img');
+    impressionImage.style.height = 1;
+    impressionImage.style.width = 1;
+    impressionImage.style.top = 0;
+    impressionImage.style.left = 0;
+    impressionImage.style.visibility = 'hidden';
+    impressionImage.className = 'vast-pixel';
+    impressionImage.src = url;
     if (name) {
-      impressionImage.setAttribute('data-for', name)
+      impressionImage.setAttribute('data-for', name);
     }
-    doc.body.appendChild(impressionImage)
+    doc.body.appendChild(impressionImage);
   }
 }
