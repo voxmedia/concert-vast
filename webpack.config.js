@@ -1,6 +1,6 @@
-const path = require('path')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const fs = require('fs')
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const fs = require('fs');
 // const CleanWebpackPlugin = require('clean-webpack-plugin');
 // const CopyWebpackPlugin = require('copy-webpack-plugin');
 // const webpack = require('webpack');
@@ -36,16 +36,16 @@ module.exports = {
     hot: false,
     inline: false,
   },
-}
+};
 
 function serveAssetsFromTestDirectory() {
-  const assetDirectory = 'test/assets'
+  const assetDirectory = 'test/assets';
   return fs.readdirSync(assetDirectory).map(entry => {
-    const baseName = path.basename(entry)
+    const baseName = path.basename(entry);
     return new HtmlWebpackPlugin({
       inject: 'head',
       filename: 'test/' + baseName,
       template: assetDirectory + '/' + baseName,
-    })
-  })
+    });
+  });
 }
