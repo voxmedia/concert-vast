@@ -28,7 +28,10 @@ describe('Vast Impressions', () => {
   it('should be able to add images to a different document', () => {
     const fakeDoc = {
       createElement: jest.fn(t => {
-        return { style: {} };
+        return {
+          style: {},
+          setAttribute: () => {},
+        };
       }),
       body: {
         appendChild: jest.fn(t => {}),

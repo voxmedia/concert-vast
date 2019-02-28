@@ -149,7 +149,7 @@ export default class VideoElement {
     if (clickEvent.target) {
       const height = clickEvent.target.clientHeight;
 
-      if (clickEvent.offsetY <= height - 50 && this.isBeyondFirstFrame()) {
+      if (clickEvent.offsetY <= height - VIDEO_CONTROLS_HEIGHT && this.isBeyondFirstFrame()) {
         this.vast.openClickthroughUrl();
       }
     }
