@@ -1,6 +1,6 @@
 # Concert Vast Parser
 
-This is the Concert Vast Parser. It consumes simple inline video VAST tags and provides a nice wrapper to interact with the XML response in a Concert-opinionated way.
+This is an opinionated and minimal Concert Vast parser. It consumes simple InLine video VAST responses and provides a nice wrapper to interact with the XML response in a Concert-opinionated way.
 
 ### Using this library
 
