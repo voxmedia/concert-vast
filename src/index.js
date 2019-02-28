@@ -1,3 +1,3 @@
-import Vast from './lib/vast'
+import ConcertVast from './lib/vast'
 
-export default Vast
+export default ConcertVast
