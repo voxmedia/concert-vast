@@ -90,9 +90,9 @@ player.src([{ type: bestVastVideo.mimeType(), src: bestVastVideo.url() }]);
 
 ### Remaining Work
 
-1. Test this with the HymnalAd SDK Video player
-1. Design error handling
-1. Open source it 🙏
+1. ~~Test this with the HymnalAd SDK Video player~~
+1. ~~Design error handling~~
+1. ~~Open source it 🙏~~
 
 ### Contributing
 
@@ -110,7 +110,7 @@ player.src([{ type: bestVastVideo.mimeType(), src: bestVastVideo.url() }]);
 
 Copyright 2019 Vox Media
 
-Licensed under the Apache License, Version 2.0 (the "License");
+Licensed under the Apache License, Version 2.0 (the "License")
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
