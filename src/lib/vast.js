@@ -3,6 +3,7 @@ import Clickthrough from './vast_elements/clickthrough';
 import Impression from './vast_elements/impression';
 import ErrorImpression from './vast_elements/error_impression';
 import TrackingEvents from './vast_elements/tracking_events';
+import WrapperUrl from './vast_elements/wrapper_url';
 import StreamChooser from './stream_chooser';
 
 import VideoElementApplication from './applications/video_element';
@@ -24,6 +25,7 @@ export default class Vast {
       Impression: new Impression(this),
       ErrorImpression: new ErrorImpression(this),
       TrackingEvents: new TrackingEvents(this),
+      WrapperUrl: new WrapperUrl(this),
     };
 
     if (xml) {
@@ -55,6 +57,10 @@ export default class Vast {
 
   openClickthroughUrl() {
     return this.loadedElements['Clickthrough'].openClickthroughUrl();
+  }
+
+  wrapperUrl() {
+    return this.loadedElements['WrapperUrl'].wrapperUrl();
   }
 
   impressionUrls() {
@@ -127,7 +133,7 @@ export default class Vast {
       if (this.vastDocument.documentElement.nodeName == 'parsererror') {
         throw new VastXMLParsingError(`Error parsing ${this.vastXml}. Not valid XML`);
       }
-      this.processAllElements();
+      this.processElements();
     }
   }
 
@@ -164,7 +170,7 @@ export default class Vast {
     });
   }
 
-  processAllElements() {
+  processElements() {
     Object.values(this.loadedElements).forEach(e => e.process());
   }
 }

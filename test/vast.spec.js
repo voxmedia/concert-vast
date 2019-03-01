@@ -126,7 +126,6 @@ const mockXhr = (eventToFire = 'load', response = '', eventDelay = 100) => {
     responseText: response,
     response: response,
     addEventListener: jest.fn((eventName, func) => {
-      // console.log('adding fake listener for', eventName, 'stimulating', eventToFire)
       if (eventName == eventToFire) {
         setTimeout(() => {
           func({ message: eventToFire });
