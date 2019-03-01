@@ -1,4 +1,5 @@
 import VastElementBase from './vast_element_base';
+import NodeValue from '../node_value';
 
 export default class Clickthrough extends VastElementBase {
   setup() {
@@ -10,9 +11,7 @@ export default class Clickthrough extends VastElementBase {
   }
 
   onVastReady() {
-    this.clickthrough = this.elements.map(el => {
-      return el.childNodes[0].nodeValue;
-    })[0];
+    this.clickthrough = this.elements.map(el => NodeValue.fromElement(el))[0];
   }
 
   clickthroughUrl() {

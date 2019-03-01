@@ -1,4 +1,5 @@
 import VastElementBase from './vast_element_base';
+import NodeValue from '../node_value';
 
 class MediaFile {
   constructor(mediaElement) {
@@ -22,7 +23,7 @@ class MediaFile {
   }
 
   url() {
-    return this.element.childNodes[0].nodeValue;
+    return NodeValue.fromElement(this.element);
   }
 
   codec() {
