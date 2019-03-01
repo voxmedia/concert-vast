@@ -20,7 +20,7 @@ export default class VastElementBase {
 
     const selector = this.constructor.selector();
 
-    this.elements = Array.from(this.vast.vastDocument.querySelectorAll(selector));
+    this.elements = this.elements.concat(Array.from(this.vast.vastDocument.querySelectorAll(selector)));
     this.onVastReady();
   }
 

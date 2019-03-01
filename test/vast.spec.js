@@ -22,13 +22,18 @@ describe('Internal Error Handling', () => {
     vast = new Vast({ xml: fs.readFileSync('./test/fixtures/vast.xml') });
   });
 
-  it('should pass an XML parse error to the callback', () => {
-    expect(() => {
-      vast.useXmlString('not real xml');
-    }).toThrow(VastXMLParsingError);
+  it('should pass an XML parse error to the callback', async () => {
     let caughtError;
     try {
-      vast.useXmlString('not real xml');
+      await vast.useXmlString('not real xml');
+    } catch (error) {
+      caughtError = error;
+    }
+    expect(caughtError.constructor).toBe(VastXMLParsingError);
+
+    caughtError = null;
+    try {
+      await vast.useXmlString('not real xml');
     } catch (error) {
       caughtError = error;
     }

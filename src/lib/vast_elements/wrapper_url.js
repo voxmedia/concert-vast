@@ -1,4 +1,5 @@
 import VastElementBase from './vast_element_base';
+import NodeValue from '../node_value';
 
 export default class WrapperUrl extends VastElementBase {
   setup() {
@@ -11,12 +12,8 @@ export default class WrapperUrl extends VastElementBase {
 
   onVastReady() {
     this.url = this.elements.map(el => {
-      return el.childNodes[0].nodeValue;
+      return NodeValue.fromElement(el);
     })[0];
-  }
-
-  hasWrapperUrl() {
-    return !!this.wrapperUrl();
   }
 
   wrapperUrl() {

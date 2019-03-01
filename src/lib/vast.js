@@ -18,6 +18,7 @@ export default class Vast {
     this.vastUrl = null;
     this.vastDocument = null;
     this.bandwidthEstimateInKbs = 0;
+    this.wrapperFollowsRemaining = 5;
 
     this.loadedElements = {
       MediaFiles: new MediaFiles(this),
@@ -33,10 +34,10 @@ export default class Vast {
     }
   }
 
-  useXmlString(xml) {
+  async useXmlString(xml) {
     this.vastXml = xml;
     this.vastDocument = null;
-    this.parse();
+    await this.parse();
   }
 
   bandwidth() {
@@ -126,14 +127,15 @@ export default class Vast {
     return chooser.bestVideo();
   }
 
-  parse() {
+  async parse() {
     if (!this.vastDocument) {
       const parser = new DOMParser();
       this.vastDocument = parser.parseFromString(this.vastXml, 'application/xml');
       if (this.vastDocument.documentElement.nodeName == 'parsererror') {
         throw new VastXMLParsingError(`Error parsing ${this.vastXml}. Not valid XML`);
+      } else {
+        await this.processElements();
       }
-      this.processElements();
     }
   }
 
@@ -144,12 +146,13 @@ export default class Vast {
       request.timeout = timeout;
       let startTime;
 
-      request.addEventListener('load', e => {
+      request.addEventListener('load', async e => {
         const downloadTime = new Date().getTime() - startTime;
         const downloadSize = request.responseText.length;
         this.bandwidthEstimateInKbs = (downloadSize * 8) / (downloadTime / 1000) / 1024;
 
         this.useXmlString(request.response);
+        await this.parse();
         resolve();
       });
 
@@ -164,13 +167,18 @@ export default class Vast {
       request.addEventListener('timeout', e => {
         reject(new VastNetworkError(`Network Timeout: Request did not complete in ${timeout}ms`));
       });
+
       startTime = new Date().getTime();
       request.open('GET', this.vastUrl);
       request.send();
     });
   }
 
-  processElements() {
+  async processElements() {
     Object.values(this.loadedElements).forEach(e => e.process());
+    if (this.wrapperUrl() && this.wrapperFollowsRemaining-- >= 0) {
+      await this.loadRemoteVast(this.wrapperUrl());
+    }
+    // TODO: throw VastNetworkError if wrapperFollowsRemaining is below 0
   }
 }
