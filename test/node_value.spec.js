@@ -15,6 +15,18 @@ describe('Handling white space without breaking a sweat', () => {
   });
 });
 
+describe('Get only the value from the node', () => {
+  it('should handle cdata attributes just fine', () => {
+    const el = parsedXmlElementWithValue('<![CDATA[hello winston]]>');
+    expect(NodeValue.fromElement(el)).toBe('hello winston');
+  });
+
+  it('should ignore comment blocks', () => {
+    const el = parsedXmlElementWithValue('<!-- ignore this please -->apple sauce');
+    expect(NodeValue.fromElement(el)).toBe('apple sauce');
+  });
+});
+
 const parsedXmlElementWithValue = (value = 123) => {
   const xml = `<xml><important>${value}</important></xml>`;
   const parser = new DOMParser();
