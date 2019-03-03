@@ -26,6 +26,7 @@ describe('Wrapper extension', () => {
       }
     );
   });
+
   afterEach(() => mock.teardown());
 
   it('should find wrapper urls in vast tags', () => {
@@ -33,7 +34,8 @@ describe('Wrapper extension', () => {
   });
 
   it('should get the wrapper urls in vast tags', () => {
-    expect(vast.wrapperUrl()).toBe(
+    // The wrapperUrl should be followed and set as the url
+    expect(vast.url()).toBe(
       'https://raw.githubusercontent.com/InteractiveAdvertisingBureau/VAST_Samples/master/VAST%203.0%20Samples/Inline_Companion_Tag-test.xml'
     );
   });
@@ -51,31 +53,45 @@ describe('Wrapper extension', () => {
 });
 
 describe('Wrapper related errors', () => {
-  beforeEach(() => mock.setup());
+  let xml;
+
+  beforeEach(() => {
+    mock.setup();
+
+    xml = fs.readFileSync('./test/fixtures/vast-wrapper-loop.xml');
+    mock.get('https://forever.vast/', {
+      headers: {
+        'Content-Length': xml.length,
+        'Content-Type': 'application/xml',
+      },
+      body: xml,
+    });
+  });
+
   afterEach(() => mock.teardown());
 
   it('should throw an error if it traverses/issues too many vast requests', async () => {
-    // No matter what we request always return another wapper version
-    const followingXml = fs.readFileSync('./test/fixtures/vast-wrapper.xml');
-    mock.get(
-      'https://raw.githubusercontent.com/InteractiveAdvertisingBureau/VAST_Samples/master/VAST%203.0%20Samples/Inline_Companion_Tag-test.xml',
-      {
-        headers: {
-          'Content-Length': followingXml.length,
-          'Content-Type': 'application/xml',
-        },
-        body: followingXml,
-      }
-    );
-
-    const xmlString = fs.readFileSync('./test/fixtures/vast-wrapper.xml');
+    const vast = new Vast();
+    let caughtError;
     try {
-      const vast = new Vast();
-      await vast.useXmlString(xmlString).catch(boom => {
-        console.log('caught', boom);
-      });
-    } catch (e) {
-      console.log('caught upper', e);
+      await vast.useXmlString(xml);
+    } catch (boom) {
+      caughtError = boom;
     }
+
+    expect(caughtError).toBeDefined();
+    expect(caughtError.constructor).toBe(VastNetworkError);
+    expect(caughtError.message).toMatch(/Too Many Vast Wrapper Follows/i);
+  });
+
+  it('should place an error pixel on the page on redirects too deep', async () => {
+    const existingPixels = window.document.querySelectorAll('img.vast-pixel').length;
+
+    const vast = new Vast();
+    try {
+      await vast.useXmlString(xml);
+    } catch (boom) {}
+
+    expect(window.document.querySelectorAll('img.vast-pixel').length).toBeGreaterThan(existingPixels);
   });
 });

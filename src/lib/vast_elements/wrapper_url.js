@@ -10,6 +10,10 @@ export default class WrapperUrl extends VastElementBase {
     return 'Ad Wrapper VASTAdTagURI';
   }
 
+  static appendElementsOnFollow() {
+    return false;
+  }
+
   onVastReady() {
     this.url = this.elements.map(el => {
       return NodeValue.fromElement(el);

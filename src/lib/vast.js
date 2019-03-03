@@ -37,10 +37,7 @@ export default class Vast {
   async useXmlString(xml) {
     this.vastXml = xml;
     this.vastDocument = null;
-    await this.parse().catch(e => {
-      console.log('xml rethrow');
-      throw e;
-    });
+    await this.parse();
   }
 
   bandwidth() {
@@ -65,6 +62,10 @@ export default class Vast {
 
   wrapperUrl() {
     return this.loadedElements['WrapperUrl'].wrapperUrl();
+  }
+
+  url() {
+    return this.vastUrl;
   }
 
   impressionUrls() {
@@ -137,10 +138,7 @@ export default class Vast {
       if (this.vastDocument.documentElement.nodeName == 'parsererror') {
         throw new VastXMLParsingError(`Error parsing ${this.vastXml}. Not valid XML`);
       } else {
-        await this.processElements().catch(e => {
-          console.log('catching and re throwing');
-          throw e;
-        });
+        await this.processElements();
       }
     }
   }
@@ -156,9 +154,7 @@ export default class Vast {
         const downloadTime = new Date().getTime() - startTime;
         const downloadSize = request.responseText.length;
         this.bandwidthEstimateInKbs = (downloadSize * 8) / (downloadTime / 1000) / 1024;
-
-        this.useXmlString(request.response);
-        await this.parse();
+        await this.useXmlString(request.response).catch(err => reject(err));
         resolve();
       });
 
@@ -187,8 +183,8 @@ export default class Vast {
       if (this.wrapperFollowsRemaining-- > 0) {
         await this.loadRemoteVast(this.wrapperUrl());
       } else {
-        console.log('throwing error -- out of redirects');
-        throw new VastNetworkError('Netwwork Error: Too Many Vast Wrapper Follows');
+        this.addErrorImpressionUrls();
+        throw new VastNetworkError('Network Error: Too Many Vast Wrapper Follows');
       }
     }
   }

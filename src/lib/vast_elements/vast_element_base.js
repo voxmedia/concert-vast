@@ -8,6 +8,14 @@ export default class VastElementBase {
   // Selector to determine applicable vast elements
   static selector() {}
 
+  // When following Vast redirects (wrappers) should the elements
+  // be added to the existing list or should they replace the existing elements
+  // True will append
+  // False will replace
+  static appendElementsOnFollow() {
+    return true;
+  }
+
   // Subclasses have be loaded
   setup() {}
 
@@ -20,7 +28,11 @@ export default class VastElementBase {
 
     const selector = this.constructor.selector();
 
-    this.elements = this.elements.concat(Array.from(this.vast.vastDocument.querySelectorAll(selector)));
+    if (this.constructor.appendElementsOnFollow()) {
+      this.elements = this.elements.concat(Array.from(this.vast.vastDocument.querySelectorAll(selector)));
+    } else {
+      this.elements = Array.from(this.vast.vastDocument.querySelectorAll(selector));
+    }
     this.onVastReady();
   }
 
