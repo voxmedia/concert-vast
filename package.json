@@ -31,7 +31,8 @@
     "pretty-quick": "^1.10.0",
     "webpack": "^4.29.3",
     "webpack-cli": "^3.2.3",
-    "webpack-dev-server": "^3.2.0"
+    "webpack-dev-server": "^3.2.0",
+    "xhr-mock": "^2.4.1"
   },
   "husky": {
     "hooks": {

@@ -13,12 +13,12 @@ export class VastXMLParsingError extends Error {}
 export class VastNetworkError extends Error {}
 
 export default class Vast {
-  constructor({ xml } = {}) {
+  constructor({ xml, numberWrapperFollowsAllowed } = { numberWrapperFollowsAllowed: 5 }) {
     this.vastXml = null;
     this.vastUrl = null;
     this.vastDocument = null;
     this.bandwidthEstimateInKbs = 0;
-    this.wrapperFollowsRemaining = 5;
+    this.wrapperFollowsRemaining = numberWrapperFollowsAllowed;
 
     this.loadedElements = {
       MediaFiles: new MediaFiles(this),
@@ -37,7 +37,10 @@ export default class Vast {
   async useXmlString(xml) {
     this.vastXml = xml;
     this.vastDocument = null;
-    await this.parse();
+    await this.parse().catch(e => {
+      console.log('xml rethrow');
+      throw e;
+    });
   }
 
   bandwidth() {
@@ -134,7 +137,10 @@ export default class Vast {
       if (this.vastDocument.documentElement.nodeName == 'parsererror') {
         throw new VastXMLParsingError(`Error parsing ${this.vastXml}. Not valid XML`);
       } else {
-        await this.processElements();
+        await this.processElements().catch(e => {
+          console.log('catching and re throwing');
+          throw e;
+        });
       }
     }
   }
@@ -176,9 +182,14 @@ export default class Vast {
 
   async processElements() {
     Object.values(this.loadedElements).forEach(e => e.process());
-    if (this.wrapperUrl() && this.wrapperFollowsRemaining-- >= 0) {
-      await this.loadRemoteVast(this.wrapperUrl());
+
+    if (this.wrapperUrl()) {
+      if (this.wrapperFollowsRemaining-- > 0) {
+        await this.loadRemoteVast(this.wrapperUrl());
+      } else {
+        console.log('throwing error -- out of redirects');
+        throw new VastNetworkError('Netwwork Error: Too Many Vast Wrapper Follows');
+      }
     }
-    // TODO: throw VastNetworkError if wrapperFollowsRemaining is below 0
   }
 }
