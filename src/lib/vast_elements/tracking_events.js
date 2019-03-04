@@ -1,5 +1,26 @@
 import VastElementBase from './vast_element_base';
 
+class TrackingEvent {
+  constructor({ event, offset, url } = { offset: null }) {
+    this.event = event;
+    this.offset = offset;
+    this.url = url;
+    console.log('creating new tracking event', this.event());
+  }
+
+  event() {
+    return this.event;
+  }
+
+  offset() {
+    return this.offset;
+  }
+
+  url() {
+    return this.url;
+  }
+}
+
 export default class TrackingEvents extends VastElementBase {
   setup() {
     this.trackingUrls = [];
@@ -11,12 +32,16 @@ export default class TrackingEvents extends VastElementBase {
 
   onVastReady() {
     this.trackingUrls = this.elements.map(el => {
-      return [el.getAttribute('event'), el.childNodes[0].nodeValue];
+      return new TrackingEvent({
+        event: el.getAttribute('event'),
+        offset: el.getAttribute('offset'),
+        url: el.childNodes[0].nodeValue,
+      });
     });
   }
 
   trackingUrlsFor(eventName) {
-    return this.trackingUrls.filter(t => t[0] == eventName).map(t => t[1]);
+    return this.trackingUrls.filter(t => t.event() == eventName).map(t => t.url());
   }
 
   addImpressionTrackingImagesFor(eventName, doc = document) {

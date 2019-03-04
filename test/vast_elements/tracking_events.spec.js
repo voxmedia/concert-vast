@@ -47,3 +47,20 @@ describe('Media Files extension', () => {
     });
   });
 });
+
+describe('Progess  with time codes', () => {
+  let xml;
+  let vast;
+
+  beforeAll(async () => {
+    xml = fs.readFileSync('./test/fixtures/vast-progress.xml');
+    vast = new Vast();
+    await vast.useXmlString(xml);
+  });
+
+  it('should return nothing when adding images to the doc', () => {
+    expect(vast.addImpressionTrackingImagesFor('start')).toBe(undefined);
+  });
+
+  // creativeView
+});
