@@ -27,12 +27,9 @@ export default class VastElementBase {
     if (!this.vast.vastDocument) return;
 
     const selector = this.constructor.selector();
+    const matchedElements = Array.from(this.vast.vastDocument.querySelectorAll(selector));
+    this.elements = this.constructor.appendElementsOnFollow() ? this.elements.concat(matchedElements) : matchedElements;
 
-    if (this.constructor.appendElementsOnFollow()) {
-      this.elements = this.elements.concat(Array.from(this.vast.vastDocument.querySelectorAll(selector)));
-    } else {
-      this.elements = Array.from(this.vast.vastDocument.querySelectorAll(selector));
-    }
     this.onVastReady();
   }
 
