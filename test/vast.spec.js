@@ -1,4 +1,5 @@
-import Vast, { VastXMLParsingError, VastNetworkError } from '../src/lib/vast';
+import Vast, { VastXMLParsingError } from '../src/lib/vast';
+import { VastNetworkError } from '../src/lib/remote';
 import * as fs from 'fs';
 
 const REMOTE_URL =

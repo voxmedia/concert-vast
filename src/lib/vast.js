@@ -6,11 +6,12 @@ import TrackingEvents from './vast_elements/tracking_events';
 import WrapperUrl from './vast_elements/wrapper_url';
 import StreamChooser from './stream_chooser';
 
+import Remote, { VastNetworkError } from './remote';
+
 import VideoElementApplication from './applications/video_element';
 import VideoJsApplication from './applications/video_js';
 
 export class VastXMLParsingError extends Error {}
-export class VastNetworkError extends Error {}
 
 export default class Vast {
   constructor({ xml, numberWrapperFollowsAllowed } = { numberWrapperFollowsAllowed: 5 }) {
@@ -144,36 +145,15 @@ export default class Vast {
   }
 
   async loadRemoteVast(url, { timeout } = { timeout: 10000 }) {
-    return new Promise((resolve, reject) => {
-      this.vastUrl = url;
-      const request = new XMLHttpRequest();
-      request.timeout = timeout;
-      let startTime;
-
-      request.addEventListener('load', async e => {
-        const downloadTime = new Date().getTime() - startTime;
-        const downloadSize = request.responseText.length;
-        this.bandwidthEstimateInKbs = (downloadSize * 8) / (downloadTime / 1000) / 1024;
-        await this.useXmlString(request.response).catch(err => reject(err));
-        resolve();
-      });
-
-      request.addEventListener('error', e => {
-        reject(new VastNetworkError(`Network Error: Request status: ${request.status}, ${request.responseText}`));
-      });
-
-      request.addEventListener('abort', e => {
-        reject(new VastNetworkError('Network Aborted'));
-      });
-
-      request.addEventListener('timeout', e => {
-        reject(new VastNetworkError(`Network Timeout: Request did not complete in ${timeout}ms`));
-      });
-
-      startTime = new Date().getTime();
-      request.open('GET', this.vastUrl);
-      request.send();
+    this.vastUrl = url;
+    const remoteVastXml = await Remote.loadVast({
+      url: url,
+      onBandwidthUpdate: bw => {
+        this.bandwidthEstimateInKbs = bw;
+      },
     });
+
+    await this.useXmlString(remoteVastXml);
   }
 
   async processElements() {

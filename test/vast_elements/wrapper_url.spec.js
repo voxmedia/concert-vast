@@ -1,4 +1,5 @@
-import Vast, { VastNetworkError } from '../../src/lib/vast';
+import Vast from '../../src/lib/vast';
+import { VastNetworkError } from '../../src/lib/remote';
 import * as fs from 'fs';
 import mock from 'xhr-mock';
 
