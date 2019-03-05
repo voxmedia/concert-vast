@@ -22,14 +22,39 @@ export default class VastElementBase {
   // Vast file has been loaded and is ready to use
   onVastReady() {}
 
-  // ----
+  // Each time a vast document is loaded this method will be called
+  // and the selector method will be used to return matched elements.
+  // there by building up a collection of elements to be used by the
+  // onVastReady() function
+  //
+  //                     ┌─────────┐     ┌ ─ ─ ─ ─ ┐
+  //                     │         │
+  //                     │Vast XML │     │Vast XML │
+  //                     │   Doc   │────▶    Doc
+  //                     │         │     │         │
+  //                     │         │
+  //                     └─────────┘     └ ─ ─ ─ ─ ┘
+  //                           │               │
+  //                           │
+  //                           └───────┬ ─ ─ ─ ┘
+  //                       ┌───────────┼──┐
+  //  .───────────.        │ ┌─────────▼──┴─┐
+  // │`───────────'│       │ │ ┌────────────┴─┐
+  // │             │       │ │ │              │
+  // │Collection of│       │ │ │ VastElement  │
+  // │  Elements   │◀──────┼─┼─│    Class     │
+  // │             │       └─┤ │              │
+  // │.───────────.│         └─┤              │
+  //  `───────────'            └──────────────┘
+  //
+  //
   process() {
     if (!this.vast.vastDocument) return;
 
     const selector = this.constructor.selector();
     const matchedElements = Array.from(this.vast.vastDocument.querySelectorAll(selector));
-    this.elements = this.constructor.appendElementsOnFollow() ? this.elements.concat(matchedElements) : matchedElements;
 
+    this.elements = this.constructor.appendElementsOnFollow() ? this.elements.concat(matchedElements) : matchedElements;
     this.onVastReady();
   }
 
