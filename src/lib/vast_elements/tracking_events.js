@@ -1,4 +1,5 @@
 import VastElementBase from './vast_element_base';
+import NodeValue from '../node_value';
 
 class TrackingEvent {
   constructor({ event, offset, url } = { offset: null }) {

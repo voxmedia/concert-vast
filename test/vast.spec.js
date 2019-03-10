@@ -1,4 +1,5 @@
-import Vast, { VastXMLParsingError, VastNetworkError } from '../src/lib/vast';
+import Vast, { VastXMLParsingError } from '../src/lib/vast';
+import { VastNetworkError } from '../src/lib/remote';
 import * as fs from 'fs';
 
 const REMOTE_URL =
@@ -22,13 +23,18 @@ describe('Internal Error Handling', () => {
     vast = new Vast({ xml: fs.readFileSync('./test/fixtures/vast.xml') });
   });
 
-  it('should pass an XML parse error to the callback', () => {
-    expect(() => {
-      vast.useXmlString('not real xml');
-    }).toThrow(VastXMLParsingError);
+  it('should pass an XML parse error to the callback', async () => {
     let caughtError;
     try {
-      vast.useXmlString('not real xml');
+      await vast.useXmlString('not real xml');
+    } catch (error) {
+      caughtError = error;
+    }
+    expect(caughtError.constructor).toBe(VastXMLParsingError);
+
+    caughtError = null;
+    try {
+      await vast.useXmlString('not real xml');
     } catch (error) {
       caughtError = error;
     }
@@ -126,7 +132,6 @@ const mockXhr = (eventToFire = 'load', response = '', eventDelay = 100) => {
     responseText: response,
     response: response,
     addEventListener: jest.fn((eventName, func) => {
-      // console.log('adding fake listener for', eventName, 'stimulating', eventToFire)
       if (eventName == eventToFire) {
         setTimeout(() => {
           func({ message: eventToFire });
