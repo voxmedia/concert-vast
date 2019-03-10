@@ -148,6 +148,7 @@ export default class Vast {
     this.vastUrl = url;
     const remoteVastXml = await Remote.loadVast({
       url: url,
+      timeout: timeout,
       onBandwidthUpdate: bw => {
         this.bandwidthEstimateInKbs = bw;
       },
