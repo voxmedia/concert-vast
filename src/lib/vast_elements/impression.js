@@ -1,4 +1,5 @@
 import VastElementBase from './vast_element_base';
+import NodeValue from '../node_value';
 
 export default class Impression extends VastElementBase {
   setup() {
@@ -10,9 +11,7 @@ export default class Impression extends VastElementBase {
   }
 
   onVastReady() {
-    this._impressionUrls = this.elements.map(el => {
-      return el.childNodes[0].nodeValue;
-    });
+    this._impressionUrls = this.elements.map(el => NodeValue.fromElement(el));
   }
 
   impressionUrls() {

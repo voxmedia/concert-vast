@@ -1,4 +1,5 @@
 import VastElementBase from './vast_element_base';
+import NodeValue from '../node_value';
 
 export default class TrackingEvents extends VastElementBase {
   setup() {
@@ -11,7 +12,7 @@ export default class TrackingEvents extends VastElementBase {
 
   onVastReady() {
     this.trackingUrls = this.elements.map(el => {
-      return [el.getAttribute('event'), el.childNodes[0].nodeValue];
+      return [el.getAttribute('event'), NodeValue.fromElement(el)];
     });
   }
 
