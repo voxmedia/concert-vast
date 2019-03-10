@@ -1,7 +1,17 @@
 export class VastNetworkError extends Error {}
 
 export default class Remote {
-  static async loadVast({ url, timeout, onBandwidthUpdate } = { timeout: 10000, onBandwidthUpdate: () => {} }) {
+  /**
+   * Fetches a remote XML Vast url. It has no knowledge of XML or the Vast structure
+   *
+   * @async
+   * @param {String} url - Where to download the XML
+   * @param {Integer} timeout - time in milleseconds to wait until for remote load
+   * @param {Function} onBandwidthUpdate - Callback when there is a new bandwidth estimate available,
+   *                                       will be be passed a number representing KB/s
+   * @returns {Promise<String>} XML Response from the url
+   */
+  static async loadUrl({ url, timeout = 10000, onBandwidthUpdate = () => {} }) {
     return new Promise((resolve, reject) => {
       this.vastUrl = url;
       const request = new XMLHttpRequest();

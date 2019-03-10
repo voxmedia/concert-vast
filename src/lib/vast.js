@@ -146,7 +146,7 @@ export default class Vast {
 
   async loadRemoteVast(url, { timeout } = { timeout: 10000 }) {
     this.vastUrl = url;
-    const remoteVastXml = await Remote.loadVast({
+    const remoteVastXml = await Remote.loadUrl({
       url: url,
       timeout: timeout,
       onBandwidthUpdate: bw => {
