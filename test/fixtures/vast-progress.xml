@@ -20,6 +20,8 @@
               <Tracking event="thirdQuartile">http://example.com/tracking/thirdQuartile</Tracking>
               <Tracking event="complete">http://example.com/tracking/complete</Tracking>
               <Tracking event="progress" offset="00:00:10">http://example.com/tracking/progress-10</Tracking>
+              <Tracking event="progress" offset="00:01:40">http://example.com/tracking/progress-140</Tracking>
+              <Tracking event="progress" offset="15%">http://example.com/tracking/progress-15-percent</Tracking>
             </TrackingEvents>
             <VideoClicks>
               <ClickThrough id="blog">

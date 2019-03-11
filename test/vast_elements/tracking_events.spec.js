@@ -58,9 +58,18 @@ describe('Progess  with time codes', () => {
     await vast.useXmlString(xml);
   });
 
-  it('should return nothing when adding images to the doc', () => {
-    expect(vast.addImpressionTrackingImagesFor('start')).toBe(undefined);
+  it('should return progress percent urls', () => {
+    expect(vast.trackingUrlsFor('15%')).toContain('http://example.com/tracking/progress-15-percent');
   });
 
-  // creativeView
+  it('should return progress timecode urls', () => {
+    expect(vast.trackingUrlsFor('00:00:10')).toContain('http://example.com/tracking/progress-10');
+    expect(vast.trackingUrlsFor('00:01:40')).toContain('http://example.com/tracking/progress-140');
+  });
+
+  it('should return progress timecode urls no matter how they are formatted', () => {
+    expect(vast.trackingUrlsFor('10')).toContain('http://example.com/tracking/progress-10');
+    expect(vast.trackingUrlsFor('00:10')).toContain('http://example.com/tracking/progress-10');
+    expect(vast.trackingUrlsFor('100')).toContain('http://example.com/tracking/progress-140');
+  });
 });

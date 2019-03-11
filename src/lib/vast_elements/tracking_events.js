@@ -1,24 +1,46 @@
 import VastElementBase from './vast_element_base';
+import Timecodes from '../timecodes';
 import NodeValue from '../node_value';
 
 class TrackingEvent {
-  constructor({ event, offset, url } = { offset: null }) {
-    this.event = event;
-    this.offset = offset;
-    this.url = url;
-    console.log('creating new tracking event', this.event());
+  constructor({ eventName, url }) {
+    this._eventName = eventName;
+    this._url = url;
   }
 
-  event() {
-    return this.event;
+  eventName() {
+    return this._eventName;
   }
 
-  offset() {
-    return this.offset;
+  matches(string) {
+    return this.eventName() == string;
   }
 
   url() {
-    return this.url;
+    return this._url;
+  }
+}
+
+class ProgressTrackingEvent {
+  constructor({ offset, url }) {
+    this._offset = offset;
+    this._url = url;
+  }
+
+  matches(secondsOrTimeCodeOrPercent) {
+    return (
+      this.offset() == secondsOrTimeCodeOrPercent ||
+      this.offset() == Timecodes.secondsToTimecode(secondsOrTimeCodeOrPercent) ||
+      this.offset() == Timecodes.timecodeToTimecode(secondsOrTimeCodeOrPercent)
+    );
+  }
+
+  offset() {
+    return this._offset;
+  }
+
+  url() {
+    return this._url;
   }
 }
 
@@ -33,16 +55,19 @@ export default class TrackingEvents extends VastElementBase {
 
   onVastReady() {
     this.trackingUrls = this.elements.map(el => {
-      return new TrackingEvent({
-        event: el.getAttribute('event'),
+      const trackingEvent = el.hasAttribute('offset') ? ProgressTrackingEvent : TrackingEvent;
+
+      return new trackingEvent({
+        eventName: el.getAttribute('event'),
         offset: el.getAttribute('offset'),
-        url: el.childNodes[0].nodeValue,
+        url: NodeValue.fromElement(el),
       });
     });
   }
 
   trackingUrlsFor(eventName) {
-    return this.trackingUrls.filter(t => t.event() == eventName).map(t => t.url());
+    // const timeCodeEventName = this.toTimeCode(eventName)
+    return this.trackingUrls.filter(t => t.matches(eventName)).map(t => t.url());
   }
 
   addImpressionTrackingImagesFor(eventName, doc = document) {
