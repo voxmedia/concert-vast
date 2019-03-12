@@ -4,16 +4,12 @@ import NodeValue from '../node_value';
 
 class TrackingEvent {
   constructor({ eventName, url }) {
-    this._eventName = eventName;
+    this.eventName = eventName;
     this._url = url;
   }
 
-  eventName() {
-    return this._eventName;
-  }
-
   matches(string) {
-    return this.eventName() == string;
+    return this.eventName == string;
   }
 
   url() {
@@ -23,20 +19,16 @@ class TrackingEvent {
 
 class ProgressTrackingEvent {
   constructor({ offset, url }) {
-    this._offset = offset;
+    this.offset = offset;
     this._url = url;
   }
 
   matches(secondsOrTimeCodeOrPercent) {
     return (
-      this.offset() == secondsOrTimeCodeOrPercent ||
-      this.offset() == Timecodes.secondsToTimecode(secondsOrTimeCodeOrPercent) ||
-      this.offset() == Timecodes.timecodeToTimecode(secondsOrTimeCodeOrPercent)
+      this.offset == secondsOrTimeCodeOrPercent ||
+      this.offset == Timecodes.secondsToTimecode(secondsOrTimeCodeOrPercent) ||
+      this.offset == Timecodes.timecodeToTimecode(secondsOrTimeCodeOrPercent)
     );
-  }
-
-  offset() {
-    return this._offset;
   }
 
   url() {
@@ -66,7 +58,6 @@ export default class TrackingEvents extends VastElementBase {
   }
 
   trackingUrlsFor(eventName) {
-    // const timeCodeEventName = this.toTimeCode(eventName)
     return this.trackingUrls.filter(t => t.matches(eventName)).map(t => t.url());
   }
 
