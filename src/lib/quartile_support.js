@@ -7,6 +7,14 @@ const QUARTILES = [
 ];
 
 export default class QuartileSupport {
+  static quartiles() {
+    let quartiles = {};
+    QUARTILES.forEach(quart => {
+      quartiles[quart[1]] = quart[0];
+    });
+    return quartiles;
+  }
+
   constructor() {
     this.seenQuartiles = [];
     this.callbacks = [];

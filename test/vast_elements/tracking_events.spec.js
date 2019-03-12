@@ -73,3 +73,22 @@ describe('Progess  with time codes', () => {
     expect(vast.trackingUrlsFor('100')).toContain('http://example.com/tracking/progress-140');
   });
 });
+
+describe('Return Tracking event names', () => {
+  let xml;
+  let vast;
+
+  beforeAll(async () => {
+    xml = fs.readFileSync('./test/fixtures/vast-progress.xml');
+    vast = new Vast();
+    await vast.useXmlString(xml);
+  });
+
+  it('should return tracking urls with names', () => {
+    const eventNamesOffsets = vast.trackingEventNamesWithOffsets();
+
+    expect(eventNamesOffsets['15%']).toBe(2.4);
+    expect(eventNamesOffsets['00:01:40']).toBe(100);
+    expect(eventNamesOffsets['thirdQuartile']).toBe(12);
+  });
+});

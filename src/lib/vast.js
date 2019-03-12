@@ -89,6 +89,10 @@ export default class Vast {
     return this.loadedElements['TrackingEvents'].trackingUrlsFor(eventName);
   }
 
+  trackingEventNamesWithOffsets() {
+    return this.loadedElements['TrackingEvents'].trackingEventNamesWithOffsets();
+  }
+
   addImpressionTrackingImagesFor(eventName, doc = document) {
     return this.loadedElements['TrackingEvents'].addImpressionTrackingImagesFor(eventName, doc);
   }
