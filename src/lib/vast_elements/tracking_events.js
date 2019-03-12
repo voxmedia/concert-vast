@@ -69,9 +69,8 @@ export default class TrackingEvents extends VastElementBase {
   }
 
   onVastReady() {
-    this.duration = Timecodes.timecodeToSeconds(
-      NodeValue.fromElement(this.elements.find(el => el.nodeName == 'Duration'))
-    );
+    const durationValue = NodeValue.fromElement(this.elements.find(el => el.nodeName == 'Duration'));
+    this.duration = Timecodes.timecodeToSeconds(durationValue || '0');
 
     this.trackingEvents = this.elements
       .filter(el => el.nodeName != 'Duration')
