@@ -47,3 +47,56 @@ describe('Media Files extension', () => {
     });
   });
 });
+
+describe('Progess  with time codes', () => {
+  let xml;
+  let vast;
+
+  beforeAll(async () => {
+    xml = fs.readFileSync('./test/fixtures/vast-progress.xml');
+    vast = new Vast();
+    await vast.useXmlString(xml);
+  });
+
+  it('should return progress percent urls', () => {
+    expect(vast.trackingUrlsFor('15%')).toContain('http://example.com/tracking/progress-15-percent');
+  });
+
+  it('should return progress timecode urls', () => {
+    expect(vast.trackingUrlsFor('00:00:10')).toContain('http://example.com/tracking/progress-10');
+    expect(vast.trackingUrlsFor('00:01:40')).toContain('http://example.com/tracking/progress-140');
+  });
+
+  it('should return progress timecode urls no matter how they are formatted', () => {
+    expect(vast.trackingUrlsFor('10')).toContain('http://example.com/tracking/progress-10');
+    expect(vast.trackingUrlsFor('00:10')).toContain('http://example.com/tracking/progress-10');
+    expect(vast.trackingUrlsFor('100')).toContain('http://example.com/tracking/progress-140');
+  });
+});
+
+describe('Return Tracking event names', () => {
+  let xml;
+  let vast;
+
+  beforeAll(async () => {
+    xml = fs.readFileSync('./test/fixtures/vast-progress.xml');
+    vast = new Vast();
+    await vast.useXmlString(xml);
+  });
+
+  it('should return tracking urls with names', () => {
+    const eventNamesOffsets = vast.trackingEventNamesWithOffsets();
+
+    expect(eventNamesOffsets['15%']).toBe(2.4);
+    expect(eventNamesOffsets['00:01:40']).toBe(100);
+    expect(eventNamesOffsets['thirdQuartile']).toBe(12);
+  });
+
+  it('should return tracking urls with names', () => {
+    const eventNamesOffsets = vast.trackingEventNamesWithOffsetPercent();
+
+    expect(eventNamesOffsets['15%']).toBe(0.15);
+    expect(eventNamesOffsets['00:01:40']).toBe(1.0);
+    expect(eventNamesOffsets['thirdQuartile']).toBe(0.75);
+  });
+});

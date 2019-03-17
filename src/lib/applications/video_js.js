@@ -155,6 +155,13 @@ export default class VideoJs {
   }
 
   setupQuartileSupport() {
+    const events = this.vast.trackingEventNamesWithOffsetPercent();
+    for (const name in events) {
+      this.quartileSupport.addEvent({
+        name: name,
+        offset: events[name],
+      });
+    }
     this.quartileSupport.onQuartileChange(quartile => {
       if (!this.vastPresented()) return;
       this.vast.addImpressionTrackingImagesFor(quartile);

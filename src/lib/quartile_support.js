@@ -7,11 +7,24 @@ const QUARTILES = [
 ];
 
 export default class QuartileSupport {
+  static quartiles() {
+    let quartiles = {};
+    QUARTILES.forEach(quart => {
+      quartiles[quart[1]] = quart[0];
+    });
+    return quartiles;
+  }
+
   constructor() {
+    this.quartiles = QUARTILES.slice(0);
     this.seenQuartiles = [];
     this.callbacks = [];
     this.currentTime = 0;
     this.duration = Infinity;
+  }
+
+  addEvent({ name, offset }) {
+    this.quartiles.push([offset, name]);
   }
 
   setDuration(time) {
@@ -34,7 +47,7 @@ export default class QuartileSupport {
 
   checkForQuartileEvent() {
     const percentComplete = this.currentTime / this.duration;
-    const matchingQuartiles = QUARTILES.filter(quartile => {
+    const matchingQuartiles = this.quartiles.filter(quartile => {
       return quartile[0] < percentComplete;
     });
 

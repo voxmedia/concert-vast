@@ -1,3 +1,7 @@
+## v1.2 (March 16, 2019)
+
+- Support for all Tracking directives of the form: `Tracking event="progress"`
+
 ## v1.1 (March 3, 2019)
 
 - Preparing for open sourcing, adding documentation

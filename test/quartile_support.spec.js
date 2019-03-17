@@ -18,13 +18,37 @@ describe('Basic Quartile Functionality', () => {
   });
 });
 
+describe('Quartile Support for other non-quartile events', () => {
+  let qs;
+  beforeEach(() => {
+    qs = new QuartileSupport();
+    qs.setDuration(10);
+  });
+
+  it('should allow additional events to be registered at offsets', () => {
+    expect(typeof qs.addEvent).toBe('function');
+  });
+
+  it('should accept a name and an offset in seconds', () => {
+    qs.addEvent({ name: 'progress-10', offset: 0.1 });
+
+    let lastQName;
+    qs.onQuartileChange(quartileName => {
+      lastQName = quartileName;
+    });
+
+    qs.setCurrentTime(1.5);
+    expect(lastQName).toBe('progress-10');
+  });
+});
+
 describe('Callbacks for changes', () => {
   let qs;
   beforeEach(() => {
     qs = new QuartileSupport();
   });
 
-  it('should not set start  on 0s', () => {
+  it('should not set start on 0s', () => {
     let lastQName = null;
     qs.onQuartileChange(quartileName => {
       lastQName = quartileName;
