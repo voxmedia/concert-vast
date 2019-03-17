@@ -49,10 +49,6 @@ export default class Vast {
     return this.loadedElements['MediaFiles'].videos();
   }
 
-  asHLSUrl() {
-    return this.loadedElements['MediaFiles'].asHLSUrl();
-  }
-
   clickthroughUrl() {
     return this.loadedElements['Clickthrough'].clickthroughUrl();
   }
