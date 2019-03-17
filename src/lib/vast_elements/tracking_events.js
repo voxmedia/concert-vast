@@ -22,6 +22,11 @@ class TrackingEvent {
     return quarts[this.eventName] * duration;
   }
 
+  offsetInPercent(duration) {
+    const quarts = QuartileSupport.quartiles();
+    return quarts[this.eventName];
+  }
+
   url() {
     return this._url;
   }
@@ -51,6 +56,10 @@ class ProgressTrackingEvent {
     } else {
       return Timecodes.timecodeToSeconds(this.offset);
     }
+  }
+
+  offsetInPercent(duration) {
+    return Math.min(1.0, this.offsetInSeconds(duration) / duration);
   }
 
   url() {
@@ -97,7 +106,20 @@ export default class TrackingEvents extends VastElementBase {
 
   trackingEventNamesWithOffsets() {
     return this.trackingEvents.reduce((all, event) => {
-      all[event.name()] = event.offsetInSeconds(this.duration);
+      const offsetSeconds = event.offsetInSeconds(this.duration);
+      if (offsetSeconds) {
+        all[event.name()] = offsetSeconds;
+      }
+      return all;
+    }, {});
+  }
+
+  trackingEventNamesWithOffsetPercent() {
+    return this.trackingEvents.reduce((all, event) => {
+      const offsetPercent = event.offsetInPercent(this.duration);
+      if (offsetPercent) {
+        all[event.name()] = offsetPercent;
+      }
       return all;
     }, {});
   }

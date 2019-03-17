@@ -91,4 +91,12 @@ describe('Return Tracking event names', () => {
     expect(eventNamesOffsets['00:01:40']).toBe(100);
     expect(eventNamesOffsets['thirdQuartile']).toBe(12);
   });
+
+  it('should return tracking urls with names', () => {
+    const eventNamesOffsets = vast.trackingEventNamesWithOffsetPercent();
+
+    expect(eventNamesOffsets['15%']).toBe(0.15);
+    expect(eventNamesOffsets['00:01:40']).toBe(1.0);
+    expect(eventNamesOffsets['thirdQuartile']).toBe(0.75);
+  });
 });
