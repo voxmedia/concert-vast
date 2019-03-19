@@ -137,7 +137,6 @@ export default class VideoJs {
 
   setInitialVolume() {
     if (this.muted) {
-      this.videoJsPlayer.volume(0);
       this.videoJsPlayer.muted(true);
       this.previousVolume = -1;
     }
