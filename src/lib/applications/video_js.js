@@ -8,6 +8,11 @@ const EVENT_MAPPING = {
 const VIDEO_CONTROLS_HEIGHT = 50;
 const VAST_LOADED_CLASS = 'vast-running';
 const VAST_PLAYING_CLASS = 'vast-playing';
+const DEFAULT_OPTIONS = {
+  autoplay: false,
+  muted: true,
+  restoreOriginalVideoOnComplete: true,
+};
 
 export default class VideoJs {
   constructor({ vast, videoJsPlayer }) {
@@ -17,25 +22,34 @@ export default class VideoJs {
     this.previousSources = [];
     this._vastPresented = null;
     this.quartileSupport = new QuartileSupport();
+
     this.restoreVideoPlayer = false;
+    this.autoplay = false;
+    this.muted = true;
   }
 
-  applyAsPreroll() {
-    this._vastPresented = true;
-    this.restoreVideoPlayer = true;
+  applyAsPreroll(options = {}) {
+    options = Object.assign({}, DEFAULT_OPTIONS, options);
+    this.autoplay = options.autoplay;
+    this.muted = options.muted;
+    this.restoreVideoPlayer = options.restoreOriginalVideoOnComplete;
 
+    this._vastPresented = true;
+
+    this.setInitialVolume();
     this.addClassToVideo();
     this.pauseExistingVideoSources();
     this.setupQuartileSupport();
     this.setupVideoEventListeners();
     this.setupImpressions();
     this.loadVastVideo();
-    this.autoPlayVideo();
+    if (this.autoplay) {
+      this.autoPlayVideo();
+    }
   }
 
-  applyAsPrimary() {
-    this.applyAsPreroll();
-    this.restoreVideoPlayer = false;
+  applyAsPrimary(options = {}) {
+    this.applyAsPreroll(Object.assign({ restoreOriginalVideoOnComplete: false }, options));
   }
 
   // private
@@ -107,7 +121,6 @@ export default class VideoJs {
     this.videoJsPlayer.removeClass(VAST_LOADED_CLASS);
 
     this._vastPresented = false;
-    console.log('reloading previous sources', this.previousSources);
     this.videoJsPlayer.src(this.previousSources);
   }
 
@@ -116,10 +129,18 @@ export default class VideoJs {
 
     if (this.previousVolume <= 0 && this.videoJsPlayer.volume() != 0) {
       this.vast.addImpressionTrackingImagesFor('unmute');
-    } else if ((this.previousVolume > 0 && this.videoJsPlayer.volume() == 0) || this.videoJsPlayer.muted) {
+    } else if (this.previousVolume > 0 && (this.videoJsPlayer.volume() == 0 || this.videoJsPlayer.muted())) {
       this.vast.addImpressionTrackingImagesFor('mute');
     }
     this.previousVolume = this.videoJsPlayer.muted() ? -1 : this.videoJsPlayer.volume();
+  }
+
+  setInitialVolume() {
+    if (this.muted) {
+      this.videoJsPlayer.volume(0);
+      this.videoJsPlayer.muted(true);
+      this.previousVolume = -1;
+    }
   }
 
   autoPlayVideo() {

@@ -101,24 +101,24 @@ export default class Vast {
     return this.loadedElements['TrackingEvents'].addImpressionTrackingImagesFor(eventName, doc);
   }
 
-  applyToVideoElementAsPreroll(videoElement) {
+  applyToVideoElementAsPreroll(videoElement, opts = {}) {
     const vea = new VideoElementApplication({ vast: this, videoElement: videoElement });
-    vea.applyAsPreroll();
+    vea.applyAsPreroll(opts);
   }
 
-  applyToVideoElement(videoElement) {
+  applyToVideoElement(videoElement, opts = {}) {
     const videoElApplication = new VideoElementApplication({ vast: this, videoElement: videoElement });
-    videoElApplication.applyAsPrimary();
+    videoElApplication.applyAsPrimary(opts);
   }
 
-  applyToVideoJsAsPreroll(videoJsPlayer) {
+  applyToVideoJsAsPreroll(videoJsPlayer, opts = {}) {
     const videoJsApplication = new VideoJsApplication({ vast: this, videoJsPlayer: videoJsPlayer });
-    videoJsApplication.applyAsPreroll();
+    videoJsApplication.applyAsPreroll(opts);
   }
 
-  applyToVideoJs(videoJsPlayer) {
+  applyToVideoJs(videoJsPlayer, opts = {}) {
     const videoJsApplication = new VideoJsApplication({ vast: this, videoJsPlayer: videoJsPlayer });
-    videoJsApplication.applyAsPrimary();
+    videoJsApplication.applyAsPrimary(opts);
   }
 
   bestVideo(
