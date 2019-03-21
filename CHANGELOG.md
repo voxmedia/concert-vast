@@ -1,3 +1,7 @@
+## v1.2.1 (March 19, 2019)
+
+- Support for autplay and mute options in applications functions
+
 ## v1.2 (March 16, 2019)
 
 - Support for all Tracking directives of the form: `Tracking event="progress"`
