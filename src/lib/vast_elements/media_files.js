@@ -26,46 +26,9 @@ class MediaFile {
     return NodeValue.fromElement(this.element);
   }
 
-  codec() {
-    switch (this.mimeType()) {
-      case 'video/mp4':
-      case 'video/3gpp':
-        return 'mp4v';
-        break;
-      case 'video/webm':
-        return 'vp8';
-        break;
-      default:
-        throw TypeError('Unknown mime type ' + this.mimeType());
-    }
-  }
-
   isVideoType() {
     return this.mimeType().match(/^video\//);
   }
-}
-
-//
-class HlsMasterPlaylistFile {
-  constructor(videos = []) {
-    this.videos = videos;
-  }
-
-  contents() {
-    let contents = [];
-    contents.push('#EXTM3U');
-
-    contents = [
-      contents,
-      ...this.videos.map(v => {
-        return `#EXT-X-STREAM-INF:BANDWIDTH=${v.bitrate() *
-          1024},RESOLUTION=${v.width()}x${v.height()},CODEC=${v.codec()}\n${v.url()}`;
-      }),
-    ];
-
-    return contents.join('\n');
-  }
-  // ----
 }
 
 export default class MediaFiles extends VastElementBase {
@@ -92,10 +55,5 @@ export default class MediaFiles extends VastElementBase {
     return this.mediaFiles.filter(v => {
       return v.isVideoType();
     });
-  }
-
-  asHLSUrl() {
-    const hlsMaker = new HlsMasterPlaylistFile(this.videos());
-    return 'data:application/x-mpegURL;base64,' + btoa(hlsMaker.contents());
   }
 }

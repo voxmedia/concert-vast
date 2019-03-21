@@ -49,27 +49,3 @@ describe('Media Files extension', () => {
     expect(video.width()).toBe(640);
   });
 });
-
-describe('MediaFile to HLS Url', () => {
-  let xmlString;
-  let vast;
-
-  beforeAll(() => {
-    xmlString = fs.readFileSync('./test/fixtures/vast.xml');
-    vast = new Vast({ xml: xmlString });
-  });
-
-  it('should return a data url', () => {
-    expect(vast.asHLSUrl()).toBeDefined();
-    expect(vast.asHLSUrl()).toMatch(/^data:application\/x-mpegURL/);
-  });
-
-  it('should conform to m3u8 headers', () => {
-    const dataUrl = vast.asHLSUrl();
-    const contents = atob(dataUrl.split(',')[1]);
-    expect(contents).toMatch(/^#EXTM3U/);
-    const contentArrayAsLines = contents.split('\n');
-    expect(contentArrayAsLines[1]).toBe('#EXT-X-STREAM-INF:BANDWIDTH=268288,RESOLUTION=640x360,CODEC=mp4v');
-    expect(contentArrayAsLines[2]).toBe(vast.videos()[0].url());
-  });
-});
