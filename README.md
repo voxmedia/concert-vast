@@ -1,6 +1,6 @@
 # Concert Vast Parser
 
-This is the Concert Vast Parser. It consumes simple inline video VAST tags and provides a nice wrapper to interact with the XML response in a Concert-opinionated way.
+This is an opinionated and minimal Concert Vast parser. It consumes simple InLine video VAST responses and provides a nice wrapper to interact with the XML response in a Concert-opinionated way.
 
 ## Vast Elements Supported
 
@@ -122,10 +122,6 @@ player.src([{ type: bestVastVideo.mimeType(), src: bestVastVideo.url() }]);
 - Run `yarn cypress-open` to run cypress in visual mode
 - Run `yarn build` to build the final js
 
-### Remaining Work
-
-1. Open source it 🙏
-
 ### Contributing
 
 - Make a branch
@@ -136,5 +132,20 @@ player.src([{ type: bestVastVideo.mimeType(), src: bestVastVideo.url() }]);
 ### Important details:
 
 - es6
-- no semicolons _(come at me)_
 - Strict BDD via [Jest](https://jestjs.io/)
+
+### License
+
+Copyright 2019 Vox Media
+
+Licensed under the Apache License, Version 2.0 (the "License")
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
