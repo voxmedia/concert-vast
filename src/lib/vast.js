@@ -3,20 +3,23 @@ import Clickthrough from './vast_elements/clickthrough';
 import Impression from './vast_elements/impression';
 import ErrorImpression from './vast_elements/error_impression';
 import TrackingEvents from './vast_elements/tracking_events';
+import WrapperUrl from './vast_elements/wrapper_url';
 import StreamChooser from './stream_chooser';
+
+import Remote, { VastNetworkError } from './remote';
 
 import VideoElementApplication from './applications/video_element';
 import VideoJsApplication from './applications/video_js';
 
 export class VastXMLParsingError extends Error {}
-export class VastNetworkError extends Error {}
 
 export default class Vast {
-  constructor({ xml } = {}) {
+  constructor({ xml, numberWrapperFollowsAllowed } = { numberWrapperFollowsAllowed: 5 }) {
     this.vastXml = null;
     this.vastUrl = null;
     this.vastDocument = null;
     this.bandwidthEstimateInKbs = 0;
+    this.wrapperFollowsRemaining = numberWrapperFollowsAllowed;
 
     this.loadedElements = {
       MediaFiles: new MediaFiles(this),
@@ -24,6 +27,7 @@ export default class Vast {
       Impression: new Impression(this),
       ErrorImpression: new ErrorImpression(this),
       TrackingEvents: new TrackingEvents(this),
+      WrapperUrl: new WrapperUrl(this),
     };
 
     if (xml) {
@@ -31,10 +35,10 @@ export default class Vast {
     }
   }
 
-  useXmlString(xml) {
+  async useXmlString(xml) {
     this.vastXml = xml;
     this.vastDocument = null;
-    this.parse();
+    await this.parse();
   }
 
   bandwidth() {
@@ -45,16 +49,20 @@ export default class Vast {
     return this.loadedElements['MediaFiles'].videos();
   }
 
-  asHLSUrl() {
-    return this.loadedElements['MediaFiles'].asHLSUrl();
-  }
-
   clickthroughUrl() {
     return this.loadedElements['Clickthrough'].clickthroughUrl();
   }
 
   openClickthroughUrl() {
     return this.loadedElements['Clickthrough'].openClickthroughUrl();
+  }
+
+  wrapperUrl() {
+    return this.loadedElements['WrapperUrl'].wrapperUrl();
+  }
+
+  url() {
+    return this.vastUrl;
   }
 
   impressionUrls() {
@@ -77,28 +85,36 @@ export default class Vast {
     return this.loadedElements['TrackingEvents'].trackingUrlsFor(eventName);
   }
 
+  trackingEventNamesWithOffsets() {
+    return this.loadedElements['TrackingEvents'].trackingEventNamesWithOffsets();
+  }
+
+  trackingEventNamesWithOffsetPercent() {
+    return this.loadedElements['TrackingEvents'].trackingEventNamesWithOffsetPercent();
+  }
+
   addImpressionTrackingImagesFor(eventName, doc = document) {
     return this.loadedElements['TrackingEvents'].addImpressionTrackingImagesFor(eventName, doc);
   }
 
-  applyToVideoElementAsPreroll(videoElement) {
+  applyToVideoElementAsPreroll(videoElement, opts = {}) {
     const vea = new VideoElementApplication({ vast: this, videoElement: videoElement });
-    vea.applyAsPreroll();
+    vea.applyAsPreroll(opts);
   }
 
-  applyToVideoElement(videoElement) {
+  applyToVideoElement(videoElement, opts = {}) {
     const videoElApplication = new VideoElementApplication({ vast: this, videoElement: videoElement });
-    videoElApplication.applyAsPrimary();
+    videoElApplication.applyAsPrimary(opts);
   }
 
-  applyToVideoJsAsPreroll(videoJsPlayer) {
+  applyToVideoJsAsPreroll(videoJsPlayer, opts = {}) {
     const videoJsApplication = new VideoJsApplication({ vast: this, videoJsPlayer: videoJsPlayer });
-    videoJsApplication.applyAsPreroll();
+    videoJsApplication.applyAsPreroll(opts);
   }
 
-  applyToVideoJs(videoJsPlayer) {
+  applyToVideoJs(videoJsPlayer, opts = {}) {
     const videoJsApplication = new VideoJsApplication({ vast: this, videoJsPlayer: videoJsPlayer });
-    videoJsApplication.applyAsPrimary();
+    videoJsApplication.applyAsPrimary(opts);
   }
 
   bestVideo(
@@ -120,51 +136,41 @@ export default class Vast {
     return chooser.bestVideo();
   }
 
-  parse() {
+  async parse() {
     if (!this.vastDocument) {
       const parser = new DOMParser();
       this.vastDocument = parser.parseFromString(this.vastXml, 'application/xml');
       if (this.vastDocument.documentElement.nodeName == 'parsererror') {
         throw new VastXMLParsingError(`Error parsing ${this.vastXml}. Not valid XML`);
+      } else {
+        await this.processElements();
       }
-      this.processAllElements();
     }
   }
 
   async loadRemoteVast(url, { timeout } = { timeout: 10000 }) {
-    return new Promise((resolve, reject) => {
-      this.vastUrl = url;
-      const request = new XMLHttpRequest();
-      request.timeout = timeout;
-      let startTime;
-
-      request.addEventListener('load', e => {
-        const downloadTime = new Date().getTime() - startTime;
-        const downloadSize = request.responseText.length;
-        this.bandwidthEstimateInKbs = (downloadSize * 8) / (downloadTime / 1000) / 1024;
-
-        this.useXmlString(request.response);
-        resolve();
-      });
-
-      request.addEventListener('error', e => {
-        reject(new VastNetworkError(`Network Error: Request status: ${request.status}, ${request.responseText}`));
-      });
-
-      request.addEventListener('abort', e => {
-        reject(new VastNetworkError('Network Aborted'));
-      });
-
-      request.addEventListener('timeout', e => {
-        reject(new VastNetworkError(`Network Timeout: Request did not complete in ${timeout}ms`));
-      });
-      startTime = new Date().getTime();
-      request.open('GET', this.vastUrl);
-      request.send();
+    this.vastUrl = url;
+    const remoteVastXml = await Remote.loadUrl({
+      url: url,
+      timeout: timeout,
+      onBandwidthUpdate: bw => {
+        this.bandwidthEstimateInKbs = bw;
+      },
     });
+
+    await this.useXmlString(remoteVastXml);
   }
 
-  processAllElements() {
+  async processElements() {
     Object.values(this.loadedElements).forEach(e => e.process());
+
+    if (this.wrapperUrl()) {
+      if (this.wrapperFollowsRemaining-- > 0) {
+        await this.loadRemoteVast(this.wrapperUrl());
+      } else {
+        this.addErrorImpressionUrls();
+        throw new VastNetworkError('Network Error: Too Many Vast Wrapper Follows');
+      }
+    }
   }
 }

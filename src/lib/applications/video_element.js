@@ -10,6 +10,12 @@ const VAST_LOADED_CLASS = 'vast-running';
 const VAST_PLAYING_CLASS = 'vast-playing';
 const VAST_DELAYED_ATTRIBUTE = 'vast-delayed-src';
 
+const DEFAULT_OPTIONS = {
+  autoplay: false,
+  muted: true,
+  restoreOriginalVideoOnComplete: true,
+};
+
 export default class VideoElement {
   constructor({ vast, videoElement }) {
     this.vast = vast;
@@ -17,25 +23,35 @@ export default class VideoElement {
     this.previousVolume = this.videoElement.volume;
     this.quartileSupport = new QuartileSupport();
     this._vastPresented = null;
+
     this.restoreVideoPlayer = false;
+    this.autoplay = false;
+    this.muted = true;
   }
 
-  applyAsPreroll() {
-    this._vastPresented = true;
-    this.restoreVideoPlayer = true;
+  applyAsPreroll(options = {}) {
+    options = Object.assign({}, DEFAULT_OPTIONS, options);
+    this.autoplay = options.autoplay;
+    this.muted = options.muted;
+    this.restoreVideoPlayer = options.restoreOriginalVideoOnComplete;
 
+    this._vastPresented = true;
+
+    this.setInitialVolume();
     this.addClassToVideo();
     this.pauseExistingVideoSources();
     this.setupQuartileSupport();
     this.setupVideoEventListeners();
     this.setupImpressions();
     this.loadVastVideo();
-    this.playVideo();
+
+    if (this.autoplay) {
+      this.playVideo();
+    }
   }
 
-  applyAsPrimary() {
-    this.applyAsPreroll();
-    this.restoreVideoPlayer = false;
+  applyAsPrimary(options = {}) {
+    this.applyAsPreroll(Object.assign({ restoreOriginalVideoOnComplete: false }, options));
   }
 
   // private
@@ -135,6 +151,13 @@ export default class VideoElement {
       this.vast.addImpressionTrackingImagesFor('mute');
     }
     this.previousVolume = this.videoElement.muted ? -1 : this.videoElement.volume;
+  }
+
+  setInitialVolume() {
+    if (this.muted) {
+      this.videoElement.muted = true;
+      this.previousVolume = -1;
+    }
   }
 
   playVideo() {

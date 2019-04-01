@@ -16,12 +16,13 @@
       autoplay: true,
       preload: 'auto',
     });
-    // var videoElement = document.querySelector('video')
     var v = new ConcertVast();
     var url =
       'https://ad.doubleclick.net/ddm/pfadx/N3493.3018656VOX-CONCERT/B22204404.238409492;sz=0x0;ord=%5Btimestamp%5D;dc_lat=;dc_rdid=;tag_for_child_directed_treatment=;tfua=;dcmt=text/xml;dc_vast=3';
     v.loadRemoteVast(url).then(e => {
-      v.applyToVideoJsAsPreroll(vjs);
+      v.applyToVideoJsAsPreroll(vjs, {
+        autoplay: true,
+      });
     });
   </script>
 </html>
