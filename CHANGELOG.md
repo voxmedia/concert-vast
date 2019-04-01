@@ -1,3 +1,7 @@
+## v1.3.0 (April 1st, 2019)
+
+- Open Sourced
+
 ## v1.2.1 (March 19, 2019)
 
 - Support for autplay and mute options in applications functions
