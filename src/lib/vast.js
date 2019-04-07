@@ -1,4 +1,5 @@
 import MediaFiles from './vast_elements/media_files';
+import MediaFilesVpaid from './vast_elements/media_files_vpaid';
 import Clickthrough from './vast_elements/clickthrough';
 import Impression from './vast_elements/impression';
 import ErrorImpression from './vast_elements/error_impression';
@@ -28,6 +29,7 @@ export default class Vast {
       ErrorImpression: new ErrorImpression(this),
       TrackingEvents: new TrackingEvents(this),
       WrapperUrl: new WrapperUrl(this),
+      MediaFilesVpaid: new MediaFilesVpaid(this),
     };
 
     if (xml) {
@@ -47,6 +49,10 @@ export default class Vast {
 
   videos() {
     return this.loadedElements['MediaFiles'].videos();
+  }
+
+  vpaidUrl() {
+    return this.loadedElements['MediaFilesVpaid'].url();
   }
 
   clickthroughUrl() {

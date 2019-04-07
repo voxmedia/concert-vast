@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<VAST version="2.0">
+  <Ad id="1ltnmb">
+    <InLine>
+      <AdSystem>Innovid Ads</AdSystem>
+      <AdTitle>
+        <![CDATA[_OJP_KSP1_Alta_DTSYU_15sec_LearnMore_EN_video_MP4_V1___]]>
+      </AdTitle>
+      <Impression>
+        <![CDATA[about:blank]]>
+      </Impression>
+      <Creatives>
+        <Creative>
+          <Linear>
+            <Duration>00:00:15</Duration>
+            <MediaFiles>
+              <MediaFile delivery="progressive" width="16" height="9" type="application/javascript" apiFramework="VPAID">
+                <![CDATA[https://s-static.innovid.com/mobileapps/s/js/vpaid/1ltnmb?cb=2fbec1ca-5545-b819-8587-2688fe49a246&deviceid=&ivc=iv_geo_dma%3D679%26iv_geo_country%3DUS%26iv_geo_city%3DDes+Moines%26iv_geo_state%3DIA%26iv_geo_zip%3D50310%26iv_geo_lat%3D41.6244%26iv_geo_lon%3D-93.6694]]>
+              </MediaFile>
+            </MediaFiles>
+          </Linear>
+        </Creative>
+      </Creatives>
+    </InLine>
+  </Ad>
+</VAST>

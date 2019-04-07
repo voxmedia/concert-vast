@@ -49,3 +49,16 @@ describe('Media Files extension', () => {
     expect(video.width()).toBe(640);
   });
 });
+
+describe('VPAID support', () => {
+  let vast;
+
+  beforeAll(() => {
+    const xmlString = fs.readFileSync('./test/fixtures/vast-vpaid.xml');
+    vast = new Vast({ xml: xmlString });
+  });
+
+  it('should skip VPAID media files in videos', () => {
+    expect(vast.videos()).toEqual([]);
+  });
+});
