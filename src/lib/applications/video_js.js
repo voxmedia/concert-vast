@@ -28,6 +28,10 @@ export default class VideoJs {
     this.muted = true;
   }
 
+  player() {
+    return this.videoJsPlayer;
+  }
+
   applyAsPreroll(options = {}) {
     options = Object.assign({}, DEFAULT_OPTIONS, options);
     this.autoplay = options.autoplay;
@@ -75,6 +79,7 @@ export default class VideoJs {
 
     this.videoJsPlayer.on('play', () => {
       if (!this.vastPresented()) return;
+      this.vast.emit('adPlay');
       this.videoJsPlayer.addClass(VAST_PLAYING_CLASS);
     });
 
@@ -119,6 +124,8 @@ export default class VideoJs {
 
     if (!this.restoreVideoPlayer) return;
     this.videoJsPlayer.removeClass(VAST_LOADED_CLASS);
+
+    this.vast.emit('adEnd');
 
     this._vastPresented = false;
     this.videoJsPlayer.src(this.previousSources);

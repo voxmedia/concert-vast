@@ -12,6 +12,8 @@ import Remote, { VastNetworkError } from './remote';
 import VideoElementApplication from './applications/video_element';
 import VideoJsApplication from './applications/video_js';
 
+import AdapterProxy from './adapter_proxy.js';
+
 export class VastXMLParsingError extends Error {}
 
 export default class Vast {
@@ -21,6 +23,8 @@ export default class Vast {
     this.vastDocument = null;
     this.bandwidthEstimateInKbs = 0;
     this.wrapperFollowsRemaining = numberWrapperFollowsAllowed;
+
+    this.adapterProxy = new AdapterProxy(this);
 
     this.loadedElements = {
       MediaFiles: new MediaFiles(this),
@@ -41,6 +45,14 @@ export default class Vast {
     this.vastXml = xml;
     this.vastDocument = null;
     await this.parse();
+  }
+
+  configureAdapter(adapterName, options = {}) {
+    this.adapterProxy.configure(adapterName, options);
+  }
+
+  emit(name, ...params) {
+    this.adapterProxy.proxy(name, params);
   }
 
   bandwidth() {
@@ -150,6 +162,7 @@ export default class Vast {
         throw new VastXMLParsingError(`Error parsing ${this.vastXml}. Not valid XML`);
       } else {
         await this.processElements();
+        this.emit('vastLoaded');
       }
     }
   }

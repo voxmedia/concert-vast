@@ -29,12 +29,17 @@ export default class VideoElement {
     this.muted = true;
   }
 
+  player() {
+    console.log('returning', this.videoElement);
+    return this.videoElement;
+  }
+
   applyAsPreroll(options = {}) {
     options = Object.assign({}, DEFAULT_OPTIONS, options);
     this.autoplay = options.autoplay;
     this.muted = options.muted;
     this.restoreVideoPlayer = options.restoreOriginalVideoOnComplete;
-
+    this.vast.emit('videoApplied', this);
     this._vastPresented = true;
 
     this.setInitialVolume();
