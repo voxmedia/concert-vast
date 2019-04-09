@@ -15,6 +15,6 @@ export default class AdParameters extends VastElementBase {
   }
 
   adParameters() {
-    return this.parameters;
+    return this.parameters || '';
   }
 }

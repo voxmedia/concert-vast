@@ -13,4 +13,10 @@ describe('AdParameters', () => {
     expect(vast.adParameters()).not.toBe(undefined);
     expect(vast.adParameters()).toMatch(/xml version=/);
   });
+
+  it('should return an empty string if no parameters set', () => {
+    const xmlString = fs.readFileSync('./test/fixtures/vast-vpaid.xml');
+    const localVast = new Vast({ xml: xmlString });
+    expect(localVast.adParameters()).toBe('');
+  });
 });
