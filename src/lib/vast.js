@@ -1,4 +1,5 @@
 import MediaFiles from './vast_elements/media_files';
+import AdParameters from './vast_elements/ad_parameters';
 import MediaFilesVpaid from './vast_elements/media_files_vpaid';
 import Clickthrough from './vast_elements/clickthrough';
 import Impression from './vast_elements/impression';
@@ -28,6 +29,7 @@ export default class Vast {
 
     this.loadedElements = {
       MediaFiles: new MediaFiles(this),
+      AdParameters: new AdParameters(this),
       Clickthrough: new Clickthrough(this),
       Impression: new Impression(this),
       ErrorImpression: new ErrorImpression(this),
@@ -61,6 +63,10 @@ export default class Vast {
 
   videos() {
     return this.loadedElements['MediaFiles'].videos();
+  }
+
+  adParameters() {
+    return this.loadedElements['AdParameters'].adParameters();
   }
 
   vpaidUrl() {
