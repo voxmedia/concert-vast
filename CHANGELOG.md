@@ -1,8 +1,8 @@
-## v1.3.1 (April 16st, 2019)
+## v1.3.1 (April 16, 2019)
 
 - Update Babel configs for IE11 and Jest
 
-## v1.3.0 (April 1st, 2019)
+## v1.3.0 (April 1, 2019)
 
 - Open Sourced
 
