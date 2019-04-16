@@ -1,19 +1,11 @@
 {
-  "presets": [
-    [
-      "@babel/preset-env",
-      {
-        "targets": {
-          "browsers": [
-            "last 2 versions",
-            "> 1%",
-            "IE 11",
-            "not IE 10"
-          ]
-        }
-      }
-    ]
-  ],
+  "env": {
+    "test": {
+      "presets": [
+        "@babel/preset-env"
+      ]
+    }
+  },
   "plugins": [
     [
       "@babel/plugin-transform-runtime",
