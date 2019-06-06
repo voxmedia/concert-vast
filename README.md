@@ -132,7 +132,7 @@ player.src([{ type: bestVastVideo.mimeType(), src: bestVastVideo.url() }]);
 ## Versioning and Publishing
 
 1. Update version number in `package.json` using semantic versioning conventions.
-2. Update CHANGELOG.m to describe the changes.
+2. Update CHANGELOG.md to describe the changes.
 
 ### Important details:
 
