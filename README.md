@@ -133,6 +133,14 @@ player.src([{ type: bestVastVideo.mimeType(), src: bestVastVideo.url() }]);
 
 1. Update version number in `package.json` using semantic versioning conventions.
 2. Update CHANGELOG.md to describe the changes.
+3. Run `yarn build`
+4. Commit changes, including built distribution files in your branch
+5. Write a descriptive PR explaining _what_ changed and _why_
+
+## Releasing a new Version
+
+1. Merge the PR,
+2. Create a new release from master with the same version number as identified in the package.json
 
 ### Important details:
 
