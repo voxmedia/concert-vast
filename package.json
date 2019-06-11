@@ -10,7 +10,7 @@
     "test": "jest",
     "cypress": "cypress run",
     "cypress-open": "cypress open",
-    "build": "webpack",
+    "build": "webpack && pretty-quick dist/",
     "dev": "webpack-dev-server"
   },
   "devDependencies": {
