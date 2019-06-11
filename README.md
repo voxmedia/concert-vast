@@ -126,8 +126,13 @@ player.src([{ type: bestVastVideo.mimeType(), src: bestVastVideo.url() }]);
 
 - Make a branch
 - Add failing tests
-- Write code to statisy test
+- Write code to satisfy test
 - Make a Pull Request
+
+## Versioning and Publishing
+
+1. Update version number in `package.json` using semantic versioning conventions.
+2. Update CHANGELOG.md to describe the changes.
 
 ### Important details:
 

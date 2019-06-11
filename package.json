@@ -1,8 +1,8 @@
 {
   "name": "concert-vast",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Simple Vast Parsing for Concert Video Ads",
-  "main": "src/index.js",
+  "main": "dist/concert-vast.js",
   "author": "Vox Media",
   "license": "Apache-2.0",
   "private": false,
@@ -14,6 +14,7 @@
     "dev": "webpack-dev-server"
   },
   "devDependencies": {
+    "@babel/core": "^7.0.0",
     "@babel/plugin-transform-runtime": "^7.2.0",
     "@babel/preset-env": "^7.3.1",
     "@babel/runtime-corejs2": "^7.3.1",
