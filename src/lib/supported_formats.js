@@ -10,9 +10,12 @@ export function supportedFormats({ doc } = { doc: document }) {
   const v = doc.createElement('video');
   let supported = {};
   for (const name in FORMATS) {
-    if (v.canPlayType(FORMATS[name]) === 'probably') {
-      supported[name] = FORMATS[name];
-    }
+    // J9 HLS
+    // if (v.canPlayType(FORMATS[name]) === 'probably') {
+    //   supported[name] = FORMATS[name];
+    // }
+
+    supported[name] = FORMATS[name];
   }
   return supported;
 }

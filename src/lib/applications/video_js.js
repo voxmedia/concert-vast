@@ -95,9 +95,16 @@ export default class VideoJs {
       width: this.videoJsPlayer.width(),
     });
 
+    // J9 HLS
+    // this.videoJsPlayer.src({
+    //   type: bestVideo.mimeType(),
+    //   src: bestVideo.url(),
+    // });
+
     this.videoJsPlayer.src({
-      type: bestVideo.mimeType(),
-      src: bestVideo.url(),
+      type: 'application/x-mpegURL',
+      // src: 'https://gcdn.2mdn.net/api/manifest/hls_variant/requiressl/yes/source/web_video_ads/id/800433178a2e04f3/itag/0/playlist_type/LIVE/ei/Mlu4ZMLIG_r4-LYPtsKcmAM/susc/daps/ctier/L/vprv/1/pacing/0/ip/0.0.0.0/ipbits/0/expire/3834251570/sparams/ip,ipbits,expire,requiressl,source,id,itag,playlist_type,ei,susc,ctier,vprv/signature/9A6F47D49AD6DBE2025985845E2B7A5C31284CEC561536A25780EF1480A3C213.D5D72EC93CB26DD92F8D68FB0C89E7F68CFC7723C686154200130E273CCE560F/key/us0/file/index.m3u8 ',
+      src: 'https://volume-assets.voxmedia.com/production/18ac9c0cde5e14830220d467aa4ac68c/613440/playlist.m3u8',
     });
   }
 
