@@ -26,13 +26,8 @@ class MediaFile {
     return NodeValue.fromElement(this.element);
   }
 
-  // J9 HLS
-  // isVideoType() {
-  //   return this.mimeType().match(/^video\//);
-  // }
-
   isVideoType() {
-    return !!(this.mimeType().match(/^video\//) || this.mimeType().match(/^video|application\//));
+    return this.mimeType().match(/^video|application\//);
   }
 }
 

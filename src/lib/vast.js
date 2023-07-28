@@ -14,7 +14,7 @@ import VideoJsApplication from './applications/video_js';
 export class VastXMLParsingError extends Error {}
 
 export default class Vast {
-  constructor({ xml, numberWrapperFollowsAllowed } = { numberWrapperFollowsAllowed: 5 }) {
+  constructor({ numberWrapperFollowsAllowed } = { numberWrapperFollowsAllowed: 5 }) {
     this.vastXml = null;
     this.vastUrl = null;
     this.vastDocument = null;
@@ -29,10 +29,6 @@ export default class Vast {
       TrackingEvents: new TrackingEvents(this),
       WrapperUrl: new WrapperUrl(this),
     };
-
-    if (xml) {
-      this.useXmlString(xml);
-    }
   }
 
   async useXmlString(xml) {
@@ -118,11 +114,12 @@ export default class Vast {
   }
 
   bestVideo(
-    { width, height, bandwidth, mimeTypes } = {
+    { width, height, bandwidth, mimeTypes, multipleSources } = {
       width: 800,
       height: 600,
       bandwidth: null,
       mimeTypes: null,
+      includeHlsSource: false,
     }
   ) {
     const chooser = new StreamChooser();
@@ -133,7 +130,7 @@ export default class Vast {
     if (mimeTypes) chooser.setSupportedMimeTypes(mimeTypes);
 
     chooser.setPlayerDimensions({ width: width, height: height });
-    return chooser.bestVideo();
+    return includeHlsSource ? chooser.bestVideos() : chooser.bestVideo();
   }
 
   async parse() {

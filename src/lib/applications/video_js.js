@@ -1,4 +1,5 @@
 import QuartileSupport from '../quartile_support';
+import NodeValue from '../node_value';
 
 const EVENT_MAPPING = {
   muted: 'mute',
@@ -33,6 +34,7 @@ export default class VideoJs {
     this.autoplay = options.autoplay;
     this.muted = options.muted;
     this.restoreVideoPlayer = options.restoreOriginalVideoOnComplete;
+    this.includeHlsSource = options.includeHlsSource;
 
     this._vastPresented = true;
 
@@ -90,22 +92,20 @@ export default class VideoJs {
   }
 
   loadVastVideo() {
-    const bestVideo = this.vast.bestVideo({
+    const bestVideos = this.vast.bestVideos({
       height: this.videoJsPlayer.height(),
       width: this.videoJsPlayer.width(),
+      includeHlsSource: this.includeHlsSource,
     });
 
-    // J9 HLS
-    // this.videoJsPlayer.src({
-    //   type: bestVideo.mimeType(),
-    //   src: bestVideo.url(),
-    // });
-
-    this.videoJsPlayer.src({
-      type: 'application/x-mpegURL',
-      // src: 'https://gcdn.2mdn.net/api/manifest/hls_variant/requiressl/yes/source/web_video_ads/id/800433178a2e04f3/itag/0/playlist_type/LIVE/ei/Mlu4ZMLIG_r4-LYPtsKcmAM/susc/daps/ctier/L/vprv/1/pacing/0/ip/0.0.0.0/ipbits/0/expire/3834251570/sparams/ip,ipbits,expire,requiressl,source,id,itag,playlist_type,ei,susc,ctier,vprv/signature/9A6F47D49AD6DBE2025985845E2B7A5C31284CEC561536A25780EF1480A3C213.D5D72EC93CB26DD92F8D68FB0C89E7F68CFC7723C686154200130E273CCE560F/key/us0/file/index.m3u8 ',
-      src: 'https://volume-assets.voxmedia.com/production/18ac9c0cde5e14830220d467aa4ac68c/613440/playlist.m3u8',
-    });
+    this.videoJsPlayer.src(
+      bestVideos.map(bestVideo => {
+        return {
+          type: bestVideo.element.getAttribute('type'),
+          src: NodeValue.fromElement(bestVideo.element),
+        };
+      })
+    );
   }
 
   updateQuartileDuration() {

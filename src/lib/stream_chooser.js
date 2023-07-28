@@ -1,4 +1,4 @@
-import { supportedMimeTypes } from './supported_formats';
+import { supportedMimeTypes, getHlsFormats } from './supported_formats';
 
 export default class StreamChooser {
   constructor() {
@@ -26,8 +26,12 @@ export default class StreamChooser {
     this.bandwidthInKbs = bandwidthInKbs;
   }
 
+  hlsVideos() {
+    return getHlsFormats(this.videos);
+  }
+
   bestVideo() {
-    const matchingFormats = this.videos.filter(v => this.compatibleFormats(v));
+    const matchingFormats = this.videos.filter(v => this.compatibleStandardFormats(v));
     const closestSize = matchingFormats.sort((a, b) => this.closestSized(a, b));
     const notExceedingBandwidth = closestSize.filter(v => this.underBandwidth(v));
 
@@ -38,12 +42,16 @@ export default class StreamChooser {
     return notExceedingBandwidth[0];
   }
 
+  bestVideos() {
+    return [this.hlsVideos(), this.bestVideo()].filter(Boolean);
+  }
+
   /**
    * Returns true of this video is playable on the device/browser
    * Follows the filter callback interface
    * @param {MediaElement} video
    */
-  compatibleFormats(video) {
+  compatibleStandardFormats(video) {
     return this.supportedMimeTypes.indexOf(video.mimeType()) != -1;
   }
 
