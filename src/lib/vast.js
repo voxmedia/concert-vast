@@ -14,7 +14,7 @@ import VideoJsApplication from './applications/video_js';
 export class VastXMLParsingError extends Error {}
 
 export default class Vast {
-  constructor({ numberWrapperFollowsAllowed } = { numberWrapperFollowsAllowed: 5 }) {
+  constructor({ xml, numberWrapperFollowsAllowed } = { numberWrapperFollowsAllowed: 5 }) {
     this.vastXml = null;
     this.vastUrl = null;
     this.vastDocument = null;
@@ -27,8 +27,13 @@ export default class Vast {
       Impression: new Impression(this),
       ErrorImpression: new ErrorImpression(this),
       TrackingEvents: new TrackingEvents(this),
+      // Duration: new Duration(this),
       WrapperUrl: new WrapperUrl(this),
     };
+
+    if (xml) {
+      this.useXmlString(xml);
+    }
   }
 
   async useXmlString(xml) {
@@ -114,7 +119,7 @@ export default class Vast {
   }
 
   bestVideo(
-    { width, height, bandwidth, mimeTypes, multipleSources } = {
+    { width, height, bandwidth, mimeTypes, includeHlsSource } = {
       width: 800,
       height: 600,
       bandwidth: null,

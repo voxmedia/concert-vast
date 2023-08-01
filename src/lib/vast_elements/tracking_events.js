@@ -52,18 +52,13 @@ class ProgressTrackingEvent {
 
   offsetInSeconds(duration) {
     if (this.offset.indexOf('%') != -1) {
-      console.log('>> duration', duration);
-      console.log('>> this.offset', this.offset);
       return duration * (Number(this.offset.replace('%', '')) / 100.0);
     } else {
-      console.log('>> this.offset', this.offset);
-      console.log('>> Timecodes.timecodeToSeconds(this.offset)', Timecodes.timecodeToSeconds(this.offset));
       return Timecodes.timecodeToSeconds(this.offset);
     }
   }
 
   offsetInPercent(duration) {
-    console.log('in offsetInPercent dur ', duration);
     return Math.min(1.0, this.offsetInSeconds(duration) / duration);
   }
 
@@ -79,7 +74,7 @@ export default class TrackingEvents extends VastElementBase {
   }
 
   static selector() {
-    return 'Ad TrackingEvents Tracking, Ad Inline Creative Duration';
+    return 'Ad TrackingEvents Tracking, Ad Creative Duration';
   }
 
   onVastReady() {
@@ -112,9 +107,6 @@ export default class TrackingEvents extends VastElementBase {
   trackingEventNamesWithOffsets() {
     return this.trackingEvents.reduce((all, event) => {
       const offsetSeconds = event.offsetInSeconds(this.duration);
-      console.log('event', event);
-      console.log('this.duration', this.duration);
-      console.log('offsetSeconds', offsetSeconds);
       if (offsetSeconds) {
         all[event.name()] = offsetSeconds;
       }
@@ -123,13 +115,8 @@ export default class TrackingEvents extends VastElementBase {
   }
 
   trackingEventNamesWithOffsetPercent() {
-    console.log('this.trackingEvents', this.trackingEvents);
     return this.trackingEvents.reduce((all, event) => {
-      console.log('hello');
       const offsetPercent = event.offsetInPercent(this.duration);
-      console.log('event', event);
-      console.log('offsetPercent', offsetPercent);
-      console.log('offsetPercent', offsetPercent);
       if (offsetPercent) {
         all[event.name()] = offsetPercent;
       }
