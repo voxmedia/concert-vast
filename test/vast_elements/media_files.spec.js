@@ -31,7 +31,7 @@ describe('Media Files extension', () => {
 
   it('can return a list of video files', () => {
     const videos = vast.videos();
-    expect(videos.length).toBe(11);
+    expect(videos.length).toBe(12);
   });
 
   it('can get the url of the video', () => {

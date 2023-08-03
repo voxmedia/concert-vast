@@ -58,4 +58,14 @@ describe('descision logic for StreamChooser', () => {
     expect(vid.height()).toBe(270);
     expect(vid.bitrate()).toBe(385);
   });
+
+  it('will choose the right formats when HLS is supported', () => {
+    sc.setSupportedMimeTypes(['video/mp4']);
+    sc.useVideosFromMediaFile(vast.videos());
+    const vid = sc.bestVideos();
+    expect(vid).not.toBe(null);
+    expect(Array.isArray(vid)).toBe(true);
+    expect(vid[0].mimeType()).toBe('application/x-mpegURL');
+    expect(vid[1].mimeType()).toBe('video/mp4');
+  });
 });
