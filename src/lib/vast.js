@@ -27,7 +27,6 @@ export default class Vast {
       Impression: new Impression(this),
       ErrorImpression: new ErrorImpression(this),
       TrackingEvents: new TrackingEvents(this),
-      // Duration: new Duration(this),
       WrapperUrl: new WrapperUrl(this),
     };
 
