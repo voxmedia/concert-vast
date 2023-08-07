@@ -8,7 +8,6 @@ const STANDARD_FORMATS = {
 const HLS_FORMATS = {
   hls: 'application/vnd.apple.mpegurl',
   hlsLegacy: 'application/x-mpegURL',
-  hlsLegacyLowercase: 'application/x-mpegurl',
 };
 
 export function getHlsFormats(videos) {
