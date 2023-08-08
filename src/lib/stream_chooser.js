@@ -43,7 +43,7 @@ export default class StreamChooser {
   }
 
   bestVideos() {
-    return [this.hlsVideo(), this. bestStandardVideo()].filter(Boolean);
+    return [this.hlsVideo(), this.bestStandardVideo()].filter(Boolean);
   }
 
   /**

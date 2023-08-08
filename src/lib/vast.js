@@ -134,7 +134,7 @@ export default class Vast {
     if (mimeTypes) chooser.setSupportedMimeTypes(mimeTypes);
 
     chooser.setPlayerDimensions({ width: width, height: height });
-    return includeHlsSource ? chooser.bestVideos() : chooser.bestVideo();
+    return includeHlsSource ? chooser.bestVideos() : chooser.bestStandardVideo();
   }
 
   async parse() {
