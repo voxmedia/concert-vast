@@ -29,7 +29,7 @@ describe('descision logic for StreamChooser', () => {
   });
 
   it('will return the choosen format', () => {
-    expect(typeof sc.bestVideo).toBe('function');
+    expect(typeof sc.bestStandardVideo).toBe('function');
   });
 
   it('will choose the right format for supported formats', () => {
@@ -37,7 +37,7 @@ describe('descision logic for StreamChooser', () => {
     sc.useVideosFromMediaFile(vast.videos());
     sc.setBandwidth(1500);
     sc.setPlayerDimensions({ width: 1200, height: 720 });
-    const vid = sc.bestVideo();
+    const vid = sc.bestStandardVideo();
     expect(vid).not.toBe(null);
     expect(vid.constructor.name).toBe('MediaFile');
     expect(vid.mimeType()).toBe('video/mp4');
@@ -50,7 +50,7 @@ describe('descision logic for StreamChooser', () => {
     sc.useVideosFromMediaFile(vast.videos());
     sc.setBandwidth(600);
     sc.setPlayerDimensions({ width: 500, height: 300 });
-    const vid = sc.bestVideo();
+    const vid = sc.bestStandardVideo();
     expect(vid).not.toBe(null);
     expect(vid.constructor.name).toBe('MediaFile');
     expect(vid.mimeType()).toBe('video/mp4');
@@ -62,7 +62,7 @@ describe('descision logic for StreamChooser', () => {
   it('will choose the right formats when HLS is supported', () => {
     sc.setSupportedMimeTypes(['video/mp4']);
     sc.useVideosFromMediaFile(vast.videos());
-    const vid = sc.bestVideos();
+    const vid = sc.bestStandardVideo();
     expect(vid).not.toBe(null);
     expect(Array.isArray(vid)).toBe(true);
     expect(vid[0].mimeType()).toBe('application/x-mpegURL');

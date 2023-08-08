@@ -26,11 +26,11 @@ export default class StreamChooser {
     this.bandwidthInKbs = bandwidthInKbs;
   }
 
-  hlsVideos() {
+  hlsVideo() {
     return getHlsFormats(this.videos);
   }
 
-  bestVideo() {
+  bestStandardVideo() {
     const matchingFormats = this.videos.filter(v => this.compatibleStandardFormats(v));
     const closestSize = matchingFormats.sort((a, b) => this.closestSized(a, b));
     const notExceedingBandwidth = closestSize.filter(v => this.underBandwidth(v));
@@ -43,7 +43,7 @@ export default class StreamChooser {
   }
 
   bestVideos() {
-    return [this.hlsVideos(), this.bestVideo()].filter(Boolean);
+    return [this.hlsVideo(), this. bestStandardVideo()].filter(Boolean);
   }
 
   /**

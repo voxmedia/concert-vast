@@ -92,7 +92,7 @@ export default class VideoJs {
   }
 
   loadVastVideo() {
-    const bestVideos = this.vast.bestVideos({
+    const bestVideos = this.vast.bestVideo({
       height: this.videoJsPlayer.height(),
       width: this.videoJsPlayer.width(),
       includeHlsSource: this.includeHlsSource,
