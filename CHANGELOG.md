@@ -1,4 +1,8 @@
-## v1.3.1 (April 16, 2019)
+## v1.3.2 (August 29, 2023)
+
+- Add HLS support for VAST videos
+
+- ## v1.3.1 (April 16, 2019)
 
 - Update Babel configs for IE11 and Jest
 
