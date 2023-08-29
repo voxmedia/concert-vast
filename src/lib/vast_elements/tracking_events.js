@@ -74,7 +74,7 @@ export default class TrackingEvents extends VastElementBase {
   }
 
   static selector() {
-    return 'Ad TrackingEvents Tracking, Ad Inline Creative Duration';
+    return 'Ad TrackingEvents Tracking, Ad Creative Duration';
   }
 
   onVastReady() {

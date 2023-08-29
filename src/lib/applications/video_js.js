@@ -1,4 +1,5 @@
 import QuartileSupport from '../quartile_support';
+import NodeValue from '../node_value';
 
 const EVENT_MAPPING = {
   muted: 'mute',
@@ -33,6 +34,7 @@ export default class VideoJs {
     this.autoplay = options.autoplay;
     this.muted = options.muted;
     this.restoreVideoPlayer = options.restoreOriginalVideoOnComplete;
+    this.includeHlsSource = options.includeHlsSource;
 
     this._vastPresented = true;
 
@@ -90,15 +92,20 @@ export default class VideoJs {
   }
 
   loadVastVideo() {
-    const bestVideo = this.vast.bestVideo({
+    const bestVideos = this.vast.bestVideo({
       height: this.videoJsPlayer.height(),
       width: this.videoJsPlayer.width(),
+      includeHlsSource: this.includeHlsSource,
     });
 
-    this.videoJsPlayer.src({
-      type: bestVideo.mimeType(),
-      src: bestVideo.url(),
-    });
+    this.videoJsPlayer.src(
+      bestVideos.map(bestVideo => {
+        return {
+          type: bestVideo.element.getAttribute('type'),
+          src: NodeValue.fromElement(bestVideo.element),
+        };
+      })
+    );
   }
 
   updateQuartileDuration() {

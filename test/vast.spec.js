@@ -112,7 +112,7 @@ describe('Vast Videos', () => {
   it('can return a list of video files', () => {
     const vast = new Vast({ xml: xmlString });
     const videos = vast.videos();
-    expect(videos.length).toBe(10);
+    expect(videos.length).toBe(12);
   });
 });
 

@@ -118,11 +118,12 @@ export default class Vast {
   }
 
   bestVideo(
-    { width, height, bandwidth, mimeTypes } = {
+    { width, height, bandwidth, mimeTypes, includeHlsSource } = {
       width: 800,
       height: 600,
       bandwidth: null,
       mimeTypes: null,
+      includeHlsSource: false,
     }
   ) {
     const chooser = new StreamChooser();
@@ -133,7 +134,7 @@ export default class Vast {
     if (mimeTypes) chooser.setSupportedMimeTypes(mimeTypes);
 
     chooser.setPlayerDimensions({ width: width, height: height });
-    return chooser.bestVideo();
+    return includeHlsSource ? chooser.bestVideos() : chooser.bestStandardVideo();
   }
 
   async parse() {

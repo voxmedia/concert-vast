@@ -27,7 +27,7 @@ class MediaFile {
   }
 
   isVideoType() {
-    return this.mimeType().match(/^video\//);
+    return this.mimeType().match(/^video\/|application\//);
   }
 }
 
