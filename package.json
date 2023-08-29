@@ -10,7 +10,7 @@
     "test": "jest",
     "cypress": "cypress run",
     "cypress-open": "cypress open",
-    "build": "pretty-quick dist/",
+    "build": "export NODE_OPTIONS=--openssl-legacy-provider && webpack && pretty-quick dist/ ",
     "dev": "webpack-dev-server"
   },
   "devDependencies": {
