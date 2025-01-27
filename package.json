@@ -1,6 +1,6 @@
 {
   "name": "@voxmedia/concert-vast",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "Simple Vast Parsing for Concert Video Ads",
   "main": "dist/concert-vast.js",
   "author": "Vox Media",

@@ -1,3 +1,7 @@
+## v1.3.3 (January 27, 2025)
+
+- Update actions/cache version to v4 in ci action
+
 ## v1.3.2 (August 29, 2023)
 
 - Add HLS support for VAST videos
